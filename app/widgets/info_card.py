@@ -9,20 +9,24 @@ class InfoCard(Card):
 	def __init__(self, title: str, value: str):
 		super().__init__()
 
-		self.layout.setContentsMargins(
+		self.content_layout.setContentsMargins(
 			Spacing.M,
 			Spacing.SXS,
 			Spacing.M,
-			Spacing.SXS
+			Spacing.SXS,
 		)
 
 		row = QHBoxLayout()
+		row.setContentsMargins(0, 0, 0, 0)
 
-		self.title = BodyLabel(title)
-		self.value = BodyLabel(value)
+		self.title_label = BodyLabel(title)
+		self.value_label = BodyLabel(value)
 
-		row.addWidget(self.title)
+		row.addWidget(self.title_label)
 		row.addStretch()
-		row.addWidget(self.value)
+		row.addWidget(self.value_label)
 
-		self.layout.addLayout(row)
+		self.content_layout.addLayout(row)
+
+	def set_value(self, value: str) -> None:
+		self.value_label.setText(value)

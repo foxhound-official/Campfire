@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QFrame, QVBoxLayout
 
 from app.theme.colors import Colors
-from app.theme.radius import BorderRadius
+from app.theme.radius import Radius
 from app.theme.spacing import Spacing
 
 
@@ -13,18 +13,18 @@ class Card(QFrame):
 			f"""
 			QFrame {{
 				background-color: {Colors.SURFACE};
-				border-radius: {BorderRadius.SXS};
+				border-radius: {Radius.MEDIUM};
 			}}
 			"""
 		)
 
-		self.layout = QVBoxLayout(self)
+		self.content_layout = QVBoxLayout(self)
 
-		self.layout.setContentsMargins(
+		self.content_layout.setContentsMargins(
 			Spacing.M,
 			Spacing.M,
 			Spacing.M,
 			Spacing.M
 		)
 
-		self.layout.setSpacing(Spacing.SXS)
+		self.content_layout.setSpacing(Spacing.SXS)

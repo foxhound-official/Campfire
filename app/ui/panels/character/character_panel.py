@@ -1,54 +1,80 @@
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import (
-	QFrame,
-	QLabel,
-	QVBoxLayout,
-)
+from PySide6.QtWidgets import QFrame, QVBoxLayout
 
+from app.models.character import Character
 from app.theme.colors import Colors
 from app.theme.spacing import Spacing
-
 from app.widgets.card import Card
-from app.widgets.label import TitleLabel
 from app.widgets.info_card import InfoCard
+from app.widgets.label import CaptionLabel, TitleLabel
 
 
 class CharacterPanel(QFrame):
-	def __init__(self):
+	def __init__(self, character: Character):
 		super().__init__()
+
+		self.setObjectName("CharacterPanel")
+		self.setMinimumWidth(280)
+		self.setMaximumWidth(360)
 
 		self.setStyleSheet(
 			f"""
-			background-color: {Colors.PANEL};
-			"""
+            QFrame#CharacterPanel {{
+                background-color: {Colors.WINDOW};
+            }}
+            """
 		)
 
-		layout = QVBoxLayout(self)
-		layout.setContentsMargins(
+		main_layout = QVBoxLayout(self)
+		main_layout.setContentsMargins(
 			Spacing.XXS,
 			Spacing.XXS,
 			Spacing.XXS,
-			Spacing.XXS
+			Spacing.XXS,
 		)
-		layout.setSpacing(Spacing.SXS)
-		layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+		main_layout.setSpacing(Spacing.SXS)
+		main_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
 		self.character_card = Card()
 
-		self.character_card.layout.addWidget(
-			InfoCard("❤️ Здоровье", "84 / 100")
+		self.name_label = TitleLabel("")
+		self.details_label = CaptionLabel("")
+
+		self.health_card = InfoCard("❤️ Здоровье", "")
+		self.armor_card = InfoCard("🛡 Броня", "")
+		self.initiative_card = InfoCard("⚡ Инициатива", "")
+
+		self.character_card.content_layout.addWidget(self.name_label)
+		self.character_card.content_layout.addWidget(self.details_label)
+		self.character_card.content_layout.addSpacing(Spacing.S)
+
+		self.character_card.content_layout.addWidget(self.health_card)
+		self.character_card.content_layout.addWidget(self.armor_card)
+		self.character_card.content_layout.addWidget(
+			self.initiative_card
 		)
 
-		self.character_card.layout.addWidget(
-			InfoCard("🛡 Броня", "16")
+		main_layout.addWidget(self.character_card)
+
+		self.set_character(character)
+
+	def set_character(self, character: Character) -> None:
+		self.character = character
+
+		self.name_label.setText(character.name)
+
+		self.details_label.setText(
+			f"{character.character_class} · "
+			f"{character.level} уровень"
 		)
 
-		self.character_card.layout.addWidget(
-			InfoCard("⚡ Инициатива", "+3")
+		self.health_card.set_value(
+			f"{character.current_hp} / {character.max_hp}"
 		)
 
-		self.character_card.layout.addWidget(
-			InfoCard("🏃 Скорость", "30 футов")
-		)
+		self.armor_card.set_value(str(character.armor_class))
 
-		layout.addWidget(self.character_card)
+		initiative_prefix = "+" if character.initiative >= 0 else ""
+		self.initiative_card.set_value(
+			f"{initiative_prefix}{character.initiative}"
+		)
