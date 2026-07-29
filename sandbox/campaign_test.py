@@ -14,7 +14,23 @@ campaign.characters.append(
 	)
 )
 
-SaveManager().save_campaign(
+campaign.characters.append(
+	Character(
+		name="Владосек",
+		race="Демон ебучий",
+		character_class="Нэ людына"
+	)
+)
+
+manager = SaveManager()
+
+manager.save_campaign(
 	campaign,
 	"dragon_fall.camp"
 )
+
+loaded = manager.load_campaign(
+	"dragon_fall.camp"
+)
+
+print(loaded)

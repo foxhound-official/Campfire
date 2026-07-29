@@ -1,12 +1,11 @@
-import json
-from dataclasses import asdict, is_dataclass
-from pathlib import Path
-from typing import Any
+from __future__ import annotations
 
-JSON_OPTIONS = {
-	"ensure_ascii": False,
-	"indent": 4,
-}
+import json
+from dataclasses import asdict, fields, is_dataclass
+from pathlib import Path
+from typing import Any, Type, TypeVar
+
+T = TypeVar("T")
 
 
 def to_dict(obj: Any) -> dict:
@@ -14,6 +13,18 @@ def to_dict(obj: Any) -> dict:
 		raise TypeError(f"{type(obj).__name__} is not a dataclass")
 
 	return asdict(obj)
+
+
+def from_dict(cls: Type[T], data: dict) -> T:
+	field_names = {field.name for field in fields(cls)}
+
+	filtered = {
+		key: value
+		for key, value in data.items()
+		if key in field_names
+	}
+
+	return cls(**filtered)
 
 
 def save_json(path: str | Path, data: dict) -> None:
@@ -25,7 +36,8 @@ def save_json(path: str | Path, data: dict) -> None:
 		json.dump(
 			data,
 			file,
-			**JSON_OPTIONS
+			ensure_ascii=False,
+			indent=4
 		)
 
 
