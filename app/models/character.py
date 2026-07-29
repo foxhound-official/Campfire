@@ -1,40 +1,30 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from uuid import uuid4
+
+from app.models.effect import Effect
+from app.models.health import Health
+from app.models.item import Item
 
 
 @dataclass(slots=True)
 class Character:
-    character_id: str
-    name: str
-    character_class: str
-    level: int
+	id: str = field(default_factory=lambda: str(uuid4()))
 
-    current_hp: int
-    max_hp: int
+	name: str = ""
+	portrait: str = ""
 
-    armor_class: int
-    initiative: int
+	race: str = ""
+	character_class: str = ""
+	level: int = 1
 
-    def __post_init__(self) -> None:
-        if not self.character_id.strip():
-            raise ValueError("character_id не может быть пустым")
+	health: Health = field(
+		default_factory=lambda: Health(
+			current=1,
+			maximum=1
+		)
+	)
 
-        if not self.name.strip():
-            raise ValueError("Имя персонажа не может быть пустым")
+	inventory: list[Item] = field(default_factory=list)
+	effects: list[Effect] = field(default_factory=list)
 
-        if not self.character_class.strip():
-            raise ValueError("Класс персонажа не может быть пустым")
-
-        if self.level < 1:
-            raise ValueError("Уровень персонажа должен быть не меньше 1")
-
-        if self.max_hp < 1:
-            raise ValueError("Максимальное здоровье должно быть больше 0")
-
-        if not 0 <= self.current_hp <= self.max_hp:
-            raise ValueError(
-                "Текущее здоровье должно находиться "
-                "в диапазоне от 0 до max_hp"
-            )
-
-        if self.armor_class < 0:
-            raise ValueError("Класс брони не может быть отрицательным")
+	notes: str = ""

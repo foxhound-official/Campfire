@@ -4,9 +4,9 @@ from PySide6.QtWidgets import QFrame, QVBoxLayout
 from app.models.character import Character
 from app.theme.colors import Colors
 from app.theme.spacing import Spacing
-from app.widgets.card import Card
-from app.widgets.info_card import InfoCard
-from app.widgets.label import CaptionLabel, TitleLabel
+from app.ui.widgets.card import Card
+from app.ui.widgets.info_card import InfoCard
+from app.ui.widgets.label import CaptionLabel, TitleLabel
 
 
 class CharacterPanel(QFrame):
