@@ -1,87 +1,129 @@
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import (
-	QFormLayout,
 	QFrame,
 	QLabel,
 	QLineEdit,
 	QListWidget,
 	QProgressBar,
 	QSpinBox,
-	QVBoxLayout,
+	QVBoxLayout, QHBoxLayout,
 )
 from pathlib import Path
 from PySide6.QtWidgets import QFileDialog
 
-from app.models.campaign import Campaign
 from app.models.character import Character
+from app.theme.sizes import Sizes
+from app.theme.spacing import Spacing
 
 
 class CharacterPanel(QFrame):
-	WIDTH = 320
 
 	def __init__(self):
 		super().__init__()
 
-		self.setFixedWidth(self.WIDTH)
+		self.setFixedWidth(Sizes.CHARACTER_PANEL_WIDTH)
+
+		# Title
 
 		layout = QVBoxLayout(self)
-		layout.setContentsMargins(12, 12, 12, 12)
-		layout.setSpacing(12)
+		layout.setContentsMargins(
+			Spacing.LG,
+			Spacing.LG,
+			Spacing.LG,
+			Spacing.LG,
+		)
+
+		layout.setSpacing(Spacing.MD)
 
 		title = QLabel("Персонаж")
 		layout.addWidget(title)
 
+		# Portrait
+
 		self.portrait = QLabel("Нажмите, чтобы выбрать изображение")
+
 		self.portrait.setAlignment(Qt.AlignmentFlag.AlignCenter)
-		self.portrait.setFixedHeight(220)
+		self.portrait.setFixedHeight(Sizes.PORTRAIT_HEIGHT)
 		self.portrait.setFrameShape(QFrame.Shape.Box)
 		self.portrait.setCursor(Qt.CursorShape.PointingHandCursor)
-		self.portrait.setScaledContents(False)
 		self.portrait.mousePressEvent = self.on_portrait_clicked
+		self.portrait.setScaledContents(False)
 
 		layout.addWidget(self.portrait)
 
-		form = QFormLayout()
-		form.setSpacing(8)
+		# Description
 
+		layout.addWidget(QLabel("Имя"))
 		self.name = QLineEdit()
+		self.name.textEdited.connect(self.on_name_changed)
+		layout.addWidget(self.name)
+
+		layout.addWidget(QLabel("Раса"))
 		self.race = QLineEdit()
+		self.race.textEdited.connect(self.on_race_changed)
+		layout.addWidget(self.race)
+
+		layout.addWidget(QLabel("Класс"))
 		self.character_class = QLineEdit()
+		self.character_class.textEdited.connect(self.on_class_changed)
+		layout.addWidget(self.character_class)
+
+		# Level
+
+		row = QHBoxLayout()
+
+		row.addWidget(QLabel("Уровень"))
 
 		self.level = QSpinBox()
-		self.level.setMinimum(1)
-		self.level.setMaximum(20)
+		self.level.setRange(1, 20)
+		self.level.valueChanged.connect(self.on_level_changed)
 
-		form.addRow("Имя", self.name)
-		form.addRow("Раса", self.race)
-		form.addRow("Класс", self.character_class)
-		form.addRow("Уровень", self.level)
+		row.addWidget(self.level)
 
-		layout.addLayout(form)
+		layout.addLayout(row)
+
+		# Health
 
 		layout.addWidget(QLabel("Здоровье"))
 
-		self.health = QProgressBar()
-		self.health.setRange(0, 100)
-		self.health.setValue(100)
+		hp_row = QHBoxLayout()
 
+		self.current_hp = QSpinBox()
+		self.current_hp.setMaximum(9999)
+
+		self.maximum_hp = QSpinBox()
+		self.maximum_hp.setMaximum(9999)
+
+		hp_row.addWidget(self.current_hp)
+		hp_row.addWidget(QLabel("/"))
+		hp_row.addWidget(self.maximum_hp)
+
+		layout.addLayout(hp_row)
+
+		self.health = QProgressBar()
 		layout.addWidget(self.health)
 
-		layout.addWidget(QLabel("Эффекты"))
+		# Abilities and skills
 
-		self.effects = QListWidget()
+		layout.addWidget(QLabel("Навыки"))
 
-		layout.addWidget(self.effects)
+		self.skills = QListWidget()
+
+		layout.addWidget(self.skills)
 
 		layout.addStretch()
 
-		self.character: Character | None = None
+		# Game Party
 
-		self.name.textEdited.connect(self.on_name_changed)
-		self.race.textEdited.connect(self.on_race_changed)
-		self.character_class.textEdited.connect(self.on_class_changed)
-		self.level.valueChanged.connect(self.on_level_changed)
+		layout.addStretch()
+
+		layout.addWidget(QLabel("Пати"))
+
+		self.party = QListWidget()
+		self.party.setMaximumHeight(Sizes.PARTY_HEIGHT)
+
+		layout.addWidget(self.party)
 
 	def set_character(self, character: Character) -> None:
 		self.character = character
@@ -95,7 +137,7 @@ class CharacterPanel(QFrame):
 		self.level.setValue(character.level)
 
 		self.update_health()
-		self.update_effects()
+		# self.update_skills()
 
 		if character.portrait:
 			pixmap = QPixmap(character.portrait)
@@ -127,17 +169,19 @@ class CharacterPanel(QFrame):
 			f"{self.character.health.current} / {maximum}"
 		)
 
-	def update_effects(self) -> None:
-		self.effects.clear()
+	def update_skills(self):
 
+		self.skills.clear()
 
 		if self.character is None:
 			return
 
-		self.update_portrait()
+		for skill in self.character.skills:
+			self.skills.addItem(skill.name)
 
-		for effect in self.character.effects:
-			self.effects.addItem(effect.name)
+			self.skills.item(
+				self.skills.count() - 1
+			).setToolTip(skill.description)
 
 	def on_name_changed(self, text: str):
 		if self.character is None:

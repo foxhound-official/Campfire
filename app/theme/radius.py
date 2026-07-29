@@ -1,5 +1,7 @@
 class Radius:
-	SMALL = 6
-	MEDIUM = 10
-	LARGE = 14
-	XLARGE = 20
+	NONE = 0
+
+	SM = 4
+	MD = 8
+	LG = 12
+	XL = 16
