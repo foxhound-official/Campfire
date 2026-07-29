@@ -32,11 +32,12 @@ class CharacterPanel(QFrame):
 		title = QLabel("Персонаж")
 		layout.addWidget(title)
 
-		self.portrait = QLabel("Портрет")
+		self.portrait = QLabel("Нажмите, чтобы выбрать изображение")
 		self.portrait.setAlignment(Qt.AlignmentFlag.AlignCenter)
 		self.portrait.setFixedHeight(220)
 		self.portrait.setFrameShape(QFrame.Shape.Box)
 		self.portrait.setCursor(Qt.CursorShape.PointingHandCursor)
+		self.portrait.setScaledContents(False)
 		self.portrait.mousePressEvent = self.on_portrait_clicked
 
 		layout.addWidget(self.portrait)
@@ -182,7 +183,7 @@ class CharacterPanel(QFrame):
 		self.effects.clear()
 
 		self.portrait.clear()
-		self.portrait.setText("Портрет")
+		self.portrait.setText("Нажмите, чтобы выбрать изображение")
 
 	def on_portrait_clicked(self, event) -> None:
 
@@ -208,13 +209,13 @@ class CharacterPanel(QFrame):
 		self.portrait.clear()
 
 		if self.character is None:
-			self.portrait.setText("Портрет")
+			self.portrait.setText("Нажмите, чтобы выбрать изображение")
 			return
 
 		path = Path(self.character.portrait)
 
 		if not path.exists():
-			self.portrait.setText("Портрет")
+			self.portrait.setText("Нажмите, чтобы выбрать изображение")
 			return
 
 		pixmap = QPixmap(str(path))
