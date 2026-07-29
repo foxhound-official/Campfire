@@ -4,6 +4,7 @@ from PySide6.QtWidgets import (
 	QWidget, QHBoxLayout,
 )
 
+from app.models.campaign import Campaign
 from app.models.character import Character
 from app.ui.panels.character.character_panel import CharacterPanel
 

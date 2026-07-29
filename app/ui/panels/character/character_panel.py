@@ -1,4 +1,5 @@
 from PySide6.QtCore import Qt
+from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import (
 	QFormLayout,
 	QFrame,
@@ -9,7 +10,10 @@ from PySide6.QtWidgets import (
 	QSpinBox,
 	QVBoxLayout,
 )
+from pathlib import Path
+from PySide6.QtWidgets import QFileDialog
 
+from app.models.campaign import Campaign
 from app.models.character import Character
 
 
@@ -32,6 +36,8 @@ class CharacterPanel(QFrame):
 		self.portrait.setAlignment(Qt.AlignmentFlag.AlignCenter)
 		self.portrait.setFixedHeight(220)
 		self.portrait.setFrameShape(QFrame.Shape.Box)
+		self.portrait.setCursor(Qt.CursorShape.PointingHandCursor)
+		self.portrait.mousePressEvent = self.on_portrait_clicked
 
 		layout.addWidget(self.portrait)
 
@@ -79,6 +85,8 @@ class CharacterPanel(QFrame):
 	def set_character(self, character: Character) -> None:
 		self.character = character
 
+		self.update_portrait()
+
 		self.name.setText(character.name)
 		self.race.setText(character.race)
 		self.character_class.setText(character.character_class)
@@ -87,6 +95,18 @@ class CharacterPanel(QFrame):
 
 		self.update_health()
 		self.update_effects()
+
+		if character.portrait:
+			pixmap = QPixmap(character.portrait)
+
+			if not pixmap.isNull():
+				self.portrait.setPixmap(
+					pixmap.scaled(
+						self.portrait.size(),
+						Qt.AspectRatioMode.KeepAspectRatio,
+						Qt.TransformationMode.SmoothTransformation,
+					)
+				)
 
 	def update_health(self) -> None:
 		if self.character is None:
@@ -109,8 +129,11 @@ class CharacterPanel(QFrame):
 	def update_effects(self) -> None:
 		self.effects.clear()
 
+
 		if self.character is None:
 			return
+
+		self.update_portrait()
 
 		for effect in self.character.effects:
 			self.effects.addItem(effect.name)
@@ -120,6 +143,11 @@ class CharacterPanel(QFrame):
 			return
 
 		self.character.name = text
+
+		row = self.characters.currentRow()
+
+		if row >= 0:
+			self.characters.item(row).setText(text)
 
 	def on_race_changed(self, text: str):
 		if self.character is None:
@@ -138,3 +166,63 @@ class CharacterPanel(QFrame):
 			return
 
 		self.character.level = value
+
+	def clear(self) -> None:
+		self.character = None
+
+		self.name.clear()
+		self.race.clear()
+		self.character_class.clear()
+
+		self.level.setValue(1)
+
+		self.health.setValue(0)
+		self.health.setFormat("0 / 0")
+
+		self.effects.clear()
+
+		self.portrait.clear()
+		self.portrait.setText("Портрет")
+
+	def on_portrait_clicked(self, event) -> None:
+
+		if self.character is None:
+			return
+
+		filename, _ = QFileDialog.getOpenFileName(
+			self,
+			"Выберите портрет",
+			"",
+			"Изображения (*.png *.jpg *.jpeg *.webp)"
+		)
+
+		if not filename:
+			return
+
+		self.character.portrait = filename
+
+		self.update_portrait()
+
+	def update_portrait(self) -> None:
+
+		self.portrait.clear()
+
+		if self.character is None:
+			self.portrait.setText("Портрет")
+			return
+
+		path = Path(self.character.portrait)
+
+		if not path.exists():
+			self.portrait.setText("Портрет")
+			return
+
+		pixmap = QPixmap(str(path))
+
+		self.portrait.setPixmap(
+			pixmap.scaled(
+				self.portrait.size(),
+				Qt.AspectRatioMode.KeepAspectRatio,
+				Qt.TransformationMode.SmoothTransformation,
+			)
+		)
