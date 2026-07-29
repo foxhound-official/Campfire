@@ -50,6 +50,9 @@ class BaseScene(QWidget):
 		stack.addWidget(self.background)
 		stack.addWidget(self.overlay)
 
+		# Overlay должен находиться поверх фона
+		stack.setCurrentWidget(self.overlay)
+
 	def set_title(self, text: str):
 		self.banner.setText(text)
 

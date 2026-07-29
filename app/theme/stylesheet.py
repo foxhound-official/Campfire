@@ -57,4 +57,35 @@ def load_stylesheet() -> str:
     font-size: 18px;
     }}
     
+    QFrame#card {{
+    background: #2A2B2F;
+    border: 1px solid #4A4B50;
+    border-radius: 8px;
+    }}
+    
+    QFrame#card:hover {{
+    border: 1px solid #E09F3E;
+    }}
+    
+    QLabel#cardImage {{
+    background: #3A3B40;
+    border-radius: 6px;
+    border: none;
+    }}
+
+    QLabel#cardTitle {{
+        background: transparent;
+        border: none;
+        font-weight: bold;
+    }}
+
+    QProgressBar#cardHealth {{
+        min-height: 18px;
+        max-height: 18px;
+    }}
+
+    QProgressBar#cardHealth::chunk {{
+        background: {Colors.DANGER};
+    }}
+
     """

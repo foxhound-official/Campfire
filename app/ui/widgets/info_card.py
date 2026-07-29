@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QHBoxLayout
 
 from app.theme.spacing import Spacing
-from app.ui.widgets.card import Card
+from app.ui.widgets.cards.card import Card
 from app.ui.widgets.label import BodyLabel
 
 
