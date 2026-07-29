@@ -1,80 +1,69 @@
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QFrame, QVBoxLayout
-
-from app.models.character import Character
-from app.theme.colors import Colors
-from app.theme.spacing import Spacing
-from app.ui.widgets.card import Card
-from app.ui.widgets.info_card import InfoCard
-from app.ui.widgets.label import CaptionLabel, TitleLabel
+from PySide6.QtWidgets import (
+    QFormLayout,
+    QFrame,
+    QLabel,
+    QLineEdit,
+    QListWidget,
+    QProgressBar,
+    QSpinBox,
+    QVBoxLayout,
+)
 
 
 class CharacterPanel(QFrame):
-	def __init__(self, character: Character):
-		super().__init__()
 
-		self.setObjectName("CharacterPanel")
-		self.setMinimumWidth(280)
-		self.setMaximumWidth(360)
+    WIDTH = 320
 
-		self.setStyleSheet(
-			f"""
-            QFrame#CharacterPanel {{
-                background-color: {Colors.WINDOW};
-            }}
-            """
-		)
+    def __init__(self):
+        super().__init__()
 
-		main_layout = QVBoxLayout(self)
-		main_layout.setContentsMargins(
-			Spacing.XXS,
-			Spacing.XXS,
-			Spacing.XXS,
-			Spacing.XXS,
-		)
-		main_layout.setSpacing(Spacing.SXS)
-		main_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        self.setFixedWidth(self.WIDTH)
 
-		self.character_card = Card()
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(12, 12, 12, 12)
+        layout.setSpacing(12)
 
-		self.name_label = TitleLabel("")
-		self.details_label = CaptionLabel("")
+        title = QLabel("Персонаж")
+        layout.addWidget(title)
 
-		self.health_card = InfoCard("❤️ Здоровье", "")
-		self.armor_card = InfoCard("🛡 Броня", "")
-		self.initiative_card = InfoCard("⚡ Инициатива", "")
+        self.portrait = QLabel("Портрет")
+        self.portrait.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.portrait.setFixedHeight(220)
+        self.portrait.setFrameShape(QFrame.Shape.Box)
 
-		self.character_card.content_layout.addWidget(self.name_label)
-		self.character_card.content_layout.addWidget(self.details_label)
-		self.character_card.content_layout.addSpacing(Spacing.S)
+        layout.addWidget(self.portrait)
 
-		self.character_card.content_layout.addWidget(self.health_card)
-		self.character_card.content_layout.addWidget(self.armor_card)
-		self.character_card.content_layout.addWidget(
-			self.initiative_card
-		)
+        form = QFormLayout()
+        form.setSpacing(8)
 
-		main_layout.addWidget(self.character_card)
+        self.name = QLineEdit()
+        self.race = QLineEdit()
+        self.character_class = QLineEdit()
 
-		self.set_character(character)
+        self.level = QSpinBox()
+        self.level.setMinimum(1)
+        self.level.setMaximum(20)
 
-	def set_character(self, character: Character) -> None:
-		self.character = character
+        form.addRow("Имя", self.name)
+        form.addRow("Раса", self.race)
+        form.addRow("Класс", self.character_class)
+        form.addRow("Уровень", self.level)
 
-		self.name_label.setText(character.name)
+        layout.addLayout(form)
 
-		self.details_label.setText(
-			f"{character.character_class} · "
-			f"{character.level} уровень"
-		)
+        layout.addWidget(QLabel("Здоровье"))
 
-		self.health_card.set_value(
-			f"{character.current_hp} / {character.max_hp}"
-		)
+        self.health = QProgressBar()
+        self.health.setRange(0, 100)
+        self.health.setValue(100)
 
-		self.armor_card.set_value(str(character.armor_class))
+        layout.addWidget(self.health)
 
-		initiative_prefix = "+" if character.initiative >= 0 else ""
-		self.initiative_card.set_value(
-			f"{initiative_prefix}{character.initiative}"
-		)
+        layout.addWidget(QLabel("Эффекты"))
+
+        self.effects = QListWidget()
+
+        layout.addWidget(self.effects)
+
+        layout.addStretch()
