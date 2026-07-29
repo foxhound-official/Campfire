@@ -1,5 +1,9 @@
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 from uuid import uuid4
+
+from dataclass_wizard import JSONWizard
 
 from app.models.effect import Effect
 from app.models.health import Health
@@ -7,7 +11,7 @@ from app.models.item import Item
 
 
 @dataclass(slots=True)
-class Character:
+class Character(JSONWizard):
 	id: str = field(default_factory=lambda: str(uuid4()))
 
 	name: str = ""

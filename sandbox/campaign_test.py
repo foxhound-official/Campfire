@@ -33,4 +33,12 @@ loaded = manager.load_campaign(
 	"dragon_fall.camp"
 )
 
-print(loaded)
+print(type(loaded))
+
+print(type(loaded.characters[0]))
+print(type(loaded.characters[0].health))
+print(loaded.characters[0].name)
+
+print(type(loaded.characters[1]))
+print(type(loaded.characters[1].health))
+print(loaded.characters[1].name)
