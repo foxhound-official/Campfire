@@ -1,5 +1,5 @@
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QPixmap
+from PySide6.QtGui import QPixmap, QFont
 from PySide6.QtWidgets import (
 	QFrame,
 	QLabel,
@@ -13,6 +13,7 @@ from pathlib import Path
 from PySide6.QtWidgets import QFileDialog
 
 from app.models.character import Character
+from app.theme.fonts import Fonts
 from app.theme.sizes import Sizes
 from app.theme.spacing import Spacing
 
@@ -50,24 +51,32 @@ class CharacterPanel(QFrame):
 		self.portrait.mousePressEvent = self.on_portrait_clicked
 		self.portrait.setScaledContents(False)
 
-		layout.addWidget(self.portrait)
+		portrait_frame, portrait_layout = self.create_section()
+
+		portrait_layout.addWidget(self.portrait)
+
+		layout.addWidget(portrait_frame)
 
 		# Description
 
-		layout.addWidget(QLabel("Имя"))
+		info_frame, info_layout = self.create_section()
+
+		info_layout.addWidget(QLabel("Имя"))
 		self.name = QLineEdit()
 		self.name.textEdited.connect(self.on_name_changed)
-		layout.addWidget(self.name)
+		info_layout.addWidget(self.name)
 
-		layout.addWidget(QLabel("Раса"))
+		info_layout.addWidget(QLabel("Раса"))
 		self.race = QLineEdit()
 		self.race.textEdited.connect(self.on_race_changed)
-		layout.addWidget(self.race)
+		info_layout.addWidget(self.race)
 
-		layout.addWidget(QLabel("Класс"))
+		info_layout.addWidget(QLabel("Класс"))
 		self.character_class = QLineEdit()
 		self.character_class.textEdited.connect(self.on_class_changed)
-		layout.addWidget(self.character_class)
+		info_layout.addWidget(self.character_class)
+
+		layout.addWidget(info_frame)
 
 		# Level
 
@@ -85,7 +94,11 @@ class CharacterPanel(QFrame):
 
 		# Health
 
-		layout.addWidget(QLabel("Здоровье"))
+		health_frame, health_layout = self.create_section()
+
+		health_layout.addWidget(
+			self.create_title("Здоровье")
+		)
 
 		hp_row = QHBoxLayout()
 
@@ -99,18 +112,26 @@ class CharacterPanel(QFrame):
 		hp_row.addWidget(QLabel("/"))
 		hp_row.addWidget(self.maximum_hp)
 
-		layout.addLayout(hp_row)
+		health_layout.addLayout(hp_row)
 
 		self.health = QProgressBar()
-		layout.addWidget(self.health)
+		health_layout.addWidget(self.health)
+
+		layout.addWidget(health_frame)
 
 		# Abilities and skills
 
-		layout.addWidget(QLabel("Навыки"))
+		skills_frame, skills_layout = self.create_section()
+
+		skills_layout.addWidget(
+			self.create_title("Навыки")
+		)
 
 		self.skills = QListWidget()
 
-		layout.addWidget(self.skills)
+		skills_layout.addWidget(self.skills)
+
+		layout.addWidget(skills_frame)
 
 		layout.addStretch()
 
@@ -118,12 +139,18 @@ class CharacterPanel(QFrame):
 
 		layout.addStretch()
 
-		layout.addWidget(QLabel("Пати"))
+		party_frame, party_layout = self.create_section()
+
+		party_layout.addWidget(
+			self.create_title("Пати")
+		)
 
 		self.party = QListWidget()
 		self.party.setMaximumHeight(Sizes.PARTY_HEIGHT)
 
-		layout.addWidget(self.party)
+		party_layout.addWidget(self.party)
+
+		layout.addWidget(party_frame)
 
 	def set_character(self, character: Character) -> None:
 		self.character = character
@@ -271,3 +298,30 @@ class CharacterPanel(QFrame):
 				Qt.TransformationMode.SmoothTransformation,
 			)
 		)
+
+	def create_section(self) -> tuple[QFrame, QVBoxLayout]:
+		frame = QFrame()
+
+		layout = QVBoxLayout(frame)
+		layout.setContentsMargins(
+			Spacing.MD,
+			Spacing.MD,
+			Spacing.MD,
+			Spacing.MD,
+		)
+		layout.setSpacing(Spacing.SM)
+
+		return frame, layout
+
+	def create_title(self, text: str) -> QLabel:
+		label = QLabel(text)
+
+		label.setObjectName("sectionTitle")
+
+		font = QFont()
+		font.setPointSize(Fonts.SUBTITLE)
+		font.setBold(True)
+
+		label.setFont(font)
+
+		return label

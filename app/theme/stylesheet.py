@@ -33,4 +33,12 @@ def load_stylesheet() -> str:
     QProgressBar::chunk {{
         background: {Colors.ACCENT};
     }}
+
+    QLabel#sectionTitle {{
+        color: {Colors.TEXT};
+        background: transparent;
+        border: none;
+        font-weight: bold;
+    }}
+    
     """
