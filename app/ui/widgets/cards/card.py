@@ -16,7 +16,7 @@ class Card(QFrame):
 
 		self.setObjectName("card")
 
-		self.setFixedWidth(180)
+		self.setFixedWidth(Sizes.CARD_WIDTH)
 
 		self.layout = QVBoxLayout(self)
 		self.layout.setContentsMargins(
@@ -29,7 +29,7 @@ class Card(QFrame):
 
 		self.image = QLabel()
 		self.image.setObjectName("cardImage")
-		self.image.setFixedHeight(Sizes.PORTRAIT_HEIGHT // 2)
+		self.image.setFixedHeight(Sizes.CARD_IMAGE_HEIGHT)
 		self.image.setAlignment(Qt.AlignmentFlag.AlignCenter)
 		self.image.setText("Нет изображения")
 

@@ -1,6 +1,9 @@
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QLabel, QHBoxLayout
 
+from app.models.creature import Creature
+from app.models.health import Health
+from app.theme.spacing import Spacing
 from app.ui.scenes.base_scene import BaseScene
 from app.ui.widgets.cards import CreatureCard
 
@@ -16,23 +19,42 @@ class BattleScene(BaseScene):
 		)
 
 		cards_layout = QHBoxLayout()
+		cards_layout.setContentsMargins(0, 0, 0, 0)
+		cards_layout.setSpacing(Spacing.MD)
 
-		creatures = [
-			("Гоблин", 7, 7),
-			("Орк", 15, 15),
-			("Скелет", 9, 13),
-			("Волк", 8, 11),
-			("Культист", 6, 9),
+		self.creature_cards: list[CreatureCard] = []
+
+		self.creatures: list[Creature] = [
+			Creature(
+				name="Гоблин",
+				health=Health(current=7, maximum=7),
+			),
+			Creature(
+				name="Орк",
+				health=Health(current=15, maximum=15),
+			),
+			Creature(
+				name="Скелет",
+				health=Health(current=9, maximum=13),
+			),
+			Creature(
+				name="Волк",
+				health=Health(current=8, maximum=11),
+			),
+			Creature(
+				name="Культист",
+				health=Health(current=6, maximum=9),
+			),
 		]
 
-		for name, current_health, maximum_health in creatures:
-			card = CreatureCard(
-				name=name,
-				current_health=current_health,
-				maximum_health=maximum_health,
-			)
+		for creature in self.creatures:
+			card = CreatureCard(creature)
 
+			self.creature_cards.append(card)
 			cards_layout.addWidget(card)
+
+		self.creatures[2].health.current = 4
+		self.creature_cards[2].refresh()
 
 		cards_layout.addStretch()
 
