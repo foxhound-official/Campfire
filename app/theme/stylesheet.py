@@ -41,4 +41,20 @@ def load_stylesheet() -> str:
         font-weight: bold;
     }}
     
+    QLabel#sceneBackground {{
+    border: none;
+    }}
+    
+    QLabel#sceneBanner {{
+    background: rgba(25, 25, 25, 180);
+
+    border: 1px solid #4A4B50;
+    border-radius: 8px;
+
+    padding: 8px;
+
+    font-weight: bold;
+    font-size: 18px;
+    }}
+    
     """

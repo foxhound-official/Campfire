@@ -1,13 +1,15 @@
-from PySide6.QtWidgets import QLabel, QVBoxLayout, QWidget
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QLabel
+
+from app.ui.scenes.base_scene import BaseScene
 
 
-class MerchantScene(QWidget):
+class MerchantScene(BaseScene):
 
 	def __init__(self):
-		super().__init__()
+		super().__init__("Торговец")
 
-		layout = QVBoxLayout(self)
-
-		layout.addWidget(
-			QLabel("Merchant Scene")
+		self.content_layout.addWidget(
+			QLabel("Merchant Scene"),
+			alignment=Qt.AlignmentFlag.AlignCenter,
 		)

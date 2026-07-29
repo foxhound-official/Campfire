@@ -1,13 +1,15 @@
-from PySide6.QtWidgets import QLabel, QVBoxLayout, QWidget
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QLabel
+
+from app.ui.scenes.base_scene import BaseScene
 
 
-class BattleScene(QWidget):
+class BattleScene(BaseScene):
 
 	def __init__(self):
-		super().__init__()
+		super().__init__("Поле боя")
 
-		layout = QVBoxLayout(self)
-
-		layout.addWidget(
-			QLabel("Battle Scene")
+		self.content_layout.addWidget(
+			QLabel("Battle Scene"),
+			alignment=Qt.AlignmentFlag.AlignCenter,
 		)
