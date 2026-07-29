@@ -4,6 +4,7 @@ from PySide6.QtWidgets import (
 	QWidget, QHBoxLayout,
 )
 
+from app.models.character import Character
 from app.ui.panels.character.character_panel import CharacterPanel
 
 
@@ -22,6 +23,14 @@ class MainWindow(QMainWindow):
 		layout.setSpacing(0)
 
 		self.character_panel = CharacterPanel()
+
+		character = Character(
+			name="Альрик",
+			race="Человек",
+			character_class="Паладин",
+		)
+
+		self.character_panel.set_character(character)
 
 		self.workspace = QWidget()
 
