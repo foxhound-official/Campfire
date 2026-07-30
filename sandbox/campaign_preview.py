@@ -9,6 +9,7 @@ from app.models.character_skills import CharacterSkills
 from app.models.character_stats import CharacterStats
 from app.models.creature import Creature
 from app.models.health import Health
+from app.models.item import Item
 from app.models.scene_type import SceneType
 from app.theme.stylesheet import load_stylesheet
 from app.ui.main_window import MainWindow
@@ -57,6 +58,28 @@ def create_preview_campaign() -> Campaign:
 				description=(
 					"Восстанавливает здоровье "
 					"членам группы."
+				),
+			),
+		],
+		inventory_capacity=6,
+		inventory=[
+			Item(
+				name="Лечебное зелье",
+				description=(
+					"Восстанавливает здоровье персонажа."
+				),
+				quantity=2,
+			),
+			Item(
+				name="Серебряный ключ",
+				description=(
+					"Холодный ключ с гербом крепости."
+				),
+			),
+			Item(
+				name="Свиток огненной волны",
+				description=(
+					"Одноразовое заклинание по области."
 				),
 			),
 		],

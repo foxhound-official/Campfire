@@ -222,4 +222,22 @@ def load_stylesheet() -> str:
         border-radius: 2px;
     }}
 
+	QFrame#inventoryPanel {{
+		background: transparent;
+		border: none;
+		border-radius: 0;
+	}}
+
+	QFrame#inventoryContent {{
+		background: {Colors.PANEL};
+		border: 1px solid {Colors.BORDER};
+		border-radius: {Radius.MD}px;
+	}}
+
+	QPushButton#inventoryHandle {{
+		background: {Colors.PANEL};
+		border: 1px solid {Colors.BORDER};
+		border-radius: {Radius.MD};
+	}}
+
     """

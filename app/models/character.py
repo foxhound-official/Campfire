@@ -17,6 +17,9 @@ from app.models.item import Item
 class Character(JSONWizard):
 	id: str = field(default_factory=lambda: str(uuid4()))
 
+	inventory_capacity: int = 12
+	inventory: list[Item] = field(default_factory=list)
+
 	name: str = ""
 	portrait: str = ""
 	party_portrait: str = ""

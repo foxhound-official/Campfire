@@ -41,3 +41,6 @@ htmlcov/
 
 # Qt / PySide generated files
 *.ui~
+
+# Dist
+.dist/

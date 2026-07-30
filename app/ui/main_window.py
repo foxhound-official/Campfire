@@ -1,8 +1,9 @@
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
 	QHBoxLayout,
 	QMainWindow,
 	QStackedWidget,
-	QWidget,
+	QWidget, QStackedLayout, QGridLayout,
 )
 
 from app.models.campaign import Campaign
@@ -15,6 +16,7 @@ from app.ui.scenes import (
 	NarrationScene,
 	PuzzleScene,
 )
+from inventory import InventoryPanel
 
 
 class MainWindow(QMainWindow):
@@ -69,9 +71,33 @@ class MainWindow(QMainWindow):
 		layout.setSpacing(0)
 
 		self.character_panel = CharacterPanel()
+		self.inventory_panel = InventoryPanel()
+
+		scene_area = QWidget()
+
+		scene_area_layout = QGridLayout(scene_area)
+		scene_area_layout.setContentsMargins(0, 0, 0, 0)
+		scene_area_layout.setSpacing(0)
+
+		scene_area_layout.addWidget(
+			self.scene_stack,
+			0,
+			0,
+		)
+		scene_area_layout.addWidget(
+			self.inventory_panel,
+			0,
+			0,
+			alignment=Qt.AlignmentFlag.AlignRight,
+		)
+
+		scene_area_layout.setAlignment(
+			self.inventory_panel,
+			Qt.AlignmentFlag.AlignRight,
+		)
 
 		layout.addWidget(self.character_panel)
-		layout.addWidget(self.scene_stack, 1)
+		layout.addWidget(scene_area, 1)
 
 		self.setCentralWidget(central)
 
@@ -99,11 +125,15 @@ class MainWindow(QMainWindow):
 
 		if active_character is None:
 			self.active_character_id = None
+			self.inventory_panel.set_character(None)
 			return
 
 		self.active_character_id = active_character.id
 
 		self.character_panel.set_character(
+			active_character
+		)
+		self.inventory_panel.set_character(
 			active_character
 		)
 
