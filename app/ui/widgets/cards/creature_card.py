@@ -34,19 +34,31 @@ class CreatureCard(Card):
 			self,
 			current_health: int,
 			maximum_health: int,
+			temporary_health: int = 0,
 	) -> None:
 		safe_maximum = max(1, maximum_health)
 		safe_current = max(
 			0,
 			min(current_health, safe_maximum),
 		)
+		safe_temporary = max(0, temporary_health)
 
 		self.health_bar.setRange(0, safe_maximum)
 		self.health_bar.setValue(safe_current)
 
+		if safe_temporary > 0:
+			self.health_bar.setFormat(
+				f"%v / %m (+{safe_temporary})"
+			)
+		else:
+			self.health_bar.setFormat("%v / %m")
+
 	def refresh(self) -> None:
+		health = self.creature.health
+
 		self.set_name(self.creature.name)
 		self.set_health(
-			self.creature.health.current,
-			self.creature.health.maximum,
+			current_health=health.current,
+			maximum_health=health.maximum,
+			temporary_health=health.temporary,
 		)

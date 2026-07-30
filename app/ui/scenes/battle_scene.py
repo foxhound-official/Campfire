@@ -9,6 +9,7 @@ from app.ui.widgets.cards import CreatureCard
 
 
 class BattleScene(BaseScene):
+	MAX_CREATURE_CARDS = 5
 
 	def __init__(self):
 		super().__init__("Поле боя")
@@ -27,7 +28,7 @@ class BattleScene(BaseScene):
 		self.creatures: list[Creature] = [
 			Creature(
 				name="Гоблин",
-				health=Health(current=7, maximum=7),
+				health=Health(current=7, maximum=7, temporary=3),
 			),
 			Creature(
 				name="Орк",
@@ -39,7 +40,7 @@ class BattleScene(BaseScene):
 			),
 			Creature(
 				name="Волк",
-				health=Health(current=8, maximum=11),
+				health=Health(current=8, maximum=11, temporary=3),
 			),
 			Creature(
 				name="Культист",
@@ -47,15 +48,16 @@ class BattleScene(BaseScene):
 			),
 		]
 
-		for creature in self.creatures:
+		cards_layout.addStretch()
+
+		for creature in self.creatures[:self.MAX_CREATURE_CARDS]:
 			card = CreatureCard(creature)
 
 			self.creature_cards.append(card)
 			cards_layout.addWidget(card)
 
-		self.creatures[2].health.current = 4
-		self.creature_cards[2].refresh()
-
 		cards_layout.addStretch()
 
+		self.content_layout.addStretch()
 		self.content_layout.addLayout(cards_layout)
+		self.content_layout.addStretch()

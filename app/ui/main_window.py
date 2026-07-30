@@ -4,6 +4,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtWidgets import QHBoxLayout, QStackedWidget
 
+from app.theme.sizes import Sizes
 from app.ui.scenes import (
 	BattleScene,
 	MerchantScene,
@@ -20,7 +21,7 @@ class MainWindow(QMainWindow):
 		super().__init__()
 
 		self.setWindowTitle("Campfire")
-		self.resize(1400, 900)
+		self.resize(Sizes.WINDOW_WIDTH, Sizes.WINDOW_HEIGHT)
 
 		self._create_scenes()
 		self._create_ui()
