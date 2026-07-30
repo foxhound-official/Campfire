@@ -9,6 +9,7 @@ from app.models.character_skills import CharacterSkills
 from app.models.character_stats import CharacterStats
 from app.models.creature import Creature
 from app.models.health import Health
+from app.models.scene_type import SceneType
 from app.theme.stylesheet import load_stylesheet
 from app.ui.main_window import MainWindow
 
@@ -63,6 +64,7 @@ def create_preview_campaign() -> Campaign:
 
 	return Campaign(
 		name="Предпросмотр интерфейса",
+		active_scene=SceneType.PUZZLE,
 		characters=[
 			alrik,
 			Character(
