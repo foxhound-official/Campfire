@@ -33,13 +33,6 @@ def load_stylesheet() -> str:
     QProgressBar::chunk {{
         background: {Colors.ACCENT};
     }}
-
-    QLabel#sectionTitle {{
-        color: {Colors.TEXT};
-        background: transparent;
-        border: none;
-        font-weight: bold;
-    }}
     
     QLabel#sceneBackground {{
     border: none;
@@ -127,10 +120,12 @@ def load_stylesheet() -> str:
 		padding: 2px 6px;
 	}}
 	
-	QProgressBar#characterHealth {{
-		min-height: 24px;
-		text-align: center;
-	}}
+    QProgressBar#characterHealth {{
+        min-height: 18px;
+        max-height: 18px;
+        border-radius: {Radius.SM}px;
+        font-size: 11px;
+    }}
 
     QFrame#statCell {{
         background: {Colors.PANEL_LIGHT};
@@ -173,6 +168,58 @@ def load_stylesheet() -> str:
 
     QTreeWidget#characterSkills::branch {{
         background: transparent;
+    }}
+
+    QListWidget#characterFeatures {{
+        background: transparent;
+        border: none;
+        padding: 0;
+        outline: none;
+    }}
+
+    QListWidget#characterFeatures::item {{
+        background: {Colors.PANEL_LIGHT};
+        border: 1px solid {Colors.BORDER};
+        border-radius: {Radius.SM}px;
+        padding: 7px 8px;
+    }}
+
+    QListWidget#characterFeatures::item:hover {{
+        border-color: {Colors.ACCENT};
+    }}
+
+    QListWidget#characterFeatures::item:disabled {{
+        background: transparent;
+        border: none;
+        color: {Colors.TEXT_SECONDARY};
+    }}
+
+    QWidget#characterParty,
+    QWidget#partyMember {{
+        background: transparent;
+        border: none;
+    }}
+
+    QLabel#partyMemberPortrait {{
+        background: {Colors.PANEL_LIGHT};
+        border: 1px solid {Colors.BORDER};
+        border-radius: {Radius.SM}px;
+        color: {Colors.TEXT_SECONDARY};
+        font-size: 14px;
+        font-weight: 700;
+    }}
+
+    QProgressBar#partyMemberHealth {{
+        min-height: 4px;
+        max-height: 4px;
+        background: {Colors.BACKGROUND};
+        border: none;
+        border-radius: 2px;
+    }}
+
+    QProgressBar#partyMemberHealth::chunk {{
+        background: {Colors.DANGER};
+        border-radius: 2px;
     }}
 
     """

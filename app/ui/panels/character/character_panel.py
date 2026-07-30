@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QFont, QPixmap
+from PySide6.QtCore import Qt, QSize
+from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import (
 	QAbstractItemView,
 	QFrame,
@@ -13,21 +13,22 @@ from PySide6.QtWidgets import (
 	QSizePolicy,
 	QTreeWidget,
 	QTreeWidgetItem,
-	QVBoxLayout,
+	QVBoxLayout, QListWidgetItem, QWidget,
 )
 
 from app.models.character import Character
-from app.theme.fonts import Fonts
+from app.theme.icons import load_feature_icon
 from app.theme.sizes import Sizes
 from app.theme.spacing import Spacing
+from app.ui.panels.character.party_member_widget import PartyMemberWidget
 
 
 class CharacterPanel(QFrame):
-
 	def __init__(self):
 		super().__init__()
 
 		self.character: Character | None = None
+		self.party_members: list[Character] = []
 
 		self.setFixedWidth(Sizes.CHARACTER_PANEL_WIDTH)
 
@@ -133,28 +134,20 @@ class CharacterPanel(QFrame):
 
 		health_frame, health_layout = self.create_section()
 
-		health_title_row = QHBoxLayout()
-		health_title_row.setContentsMargins(0, 0, 0, 0)
-		health_title_row.addWidget(
-			self.create_title("Здоровье")
+		health_layout.setContentsMargins(
+			Spacing.SM,
+			Spacing.SM,
+			Spacing.SM,
+			Spacing.SM,
 		)
-		health_title_row.addStretch()
-
-		self.temporary_health = QLabel()
-		self.temporary_health.setObjectName("temporaryHealth")
-		self.temporary_health.setAlignment(Qt.AlignmentFlag.AlignCenter)
-		self.temporary_health.hide()
-
-		health_title_row.addWidget(self.temporary_health)
-
-		health_layout.addLayout(health_title_row)
+		health_layout.setSpacing(0)
 
 		self.health = QProgressBar()
 		self.health.setObjectName("characterHealth")
+		self.health.setFixedHeight(
+			Sizes.HEALTH_BAR_HEIGHT
+		)
 		self.health.setTextVisible(True)
-		self.health.setRange(0, 1)
-		self.health.setValue(0)
-		self.health.setFormat("0 / 0")
 
 		health_layout.addWidget(self.health)
 		layout.addWidget(health_frame)
@@ -162,14 +155,6 @@ class CharacterPanel(QFrame):
 		# Main stats
 
 		stats_frame, stats_layout = self.create_section()
-
-		stats_title = self.create_title("Характеристики")
-		stats_title.setSizePolicy(
-			QSizePolicy.Policy.Preferred,
-			QSizePolicy.Policy.Fixed,
-		)
-
-		stats_layout.addWidget(stats_title)
 
 		stats_row = QHBoxLayout()
 		stats_row.setContentsMargins(0, 0, 0, 0)
@@ -360,19 +345,6 @@ class CharacterPanel(QFrame):
 			self.create_section()
 		)
 
-		features_title = self.create_title(
-			"Особенности"
-		)
-		features_title.setSizePolicy(
-			QSizePolicy.Policy.Preferred,
-			QSizePolicy.Policy.Fixed,
-		)
-
-		features_layout.addWidget(
-			features_title,
-			alignment=Qt.AlignmentFlag.AlignTop,
-		)
-
 		self.features = QListWidget()
 		self.features.setObjectName(
 			"characterFeatures"
@@ -393,6 +365,17 @@ class CharacterPanel(QFrame):
 			stretch=1,
 		)
 
+		self.features.setIconSize(QSize(20, 20))
+		self.features.setSpacing(Spacing.XS)
+		self.features.setWordWrap(True)
+
+		self.features.setHorizontalScrollBarPolicy(
+			Qt.ScrollBarPolicy.ScrollBarAlwaysOff
+		)
+		self.features.setVerticalScrollMode(
+			QAbstractItemView.ScrollMode.ScrollPerPixel
+		)
+
 		layout.addWidget(
 			features_frame,
 			stretch=1,
@@ -400,37 +383,50 @@ class CharacterPanel(QFrame):
 
 		# Party
 
-		party_frame, party_layout = self.create_section()
+		party_frame, party_section_layout = (
+			self.create_section()
+		)
 
-		party_title = self.create_title("Пати")
-		party_title.setSizePolicy(
-			QSizePolicy.Policy.Preferred,
+		party_section_layout.setContentsMargins(
+			Spacing.SM,
+			Spacing.SM,
+			Spacing.SM,
+			Spacing.SM,
+		)
+		party_section_layout.setSpacing(0)
+
+		party_frame.setFixedHeight(
+			Sizes.PARTY_SECTION_HEIGHT
+		)
+		party_frame.setSizePolicy(
+			QSizePolicy.Policy.Expanding,
 			QSizePolicy.Policy.Fixed,
 		)
 
-		party_layout.addWidget(
-			party_title,
-			alignment=Qt.AlignmentFlag.AlignTop,
+		self.party_container = QWidget()
+		self.party_container.setObjectName(
+			"characterParty"
 		)
 
-		self.party = QListWidget()
-		self.party.setMinimumHeight(
-			Sizes.PARTY_MIN_HEIGHT
+		self.party_layout = QHBoxLayout(
+			self.party_container
 		)
-		self.party.setSizePolicy(
-			QSizePolicy.Policy.Expanding,
-			QSizePolicy.Policy.Expanding,
+		self.party_layout.setContentsMargins(
+			0,
+			0,
+			0,
+			0,
+		)
+		self.party_layout.setSpacing(Spacing.XS)
+		self.party_layout.setAlignment(
+			Qt.AlignmentFlag.AlignLeft
+			| Qt.AlignmentFlag.AlignVCenter
 		)
 
-		party_layout.addWidget(
-			self.party,
-			stretch=1,
+		party_section_layout.addWidget(
+			self.party_container
 		)
-
-		layout.addWidget(
-			party_frame,
-			stretch=1,
-		)
+		layout.addWidget(party_frame)
 
 	def set_character(self, character: Character) -> None:
 		self.character = character
@@ -457,42 +453,30 @@ class CharacterPanel(QFrame):
 		self.update_health()
 		self.update_stats()
 		self.update_skills()
+		self.update_features()
+		self.update_party()
 
 	def update_health(self) -> None:
 		if self.character is None:
 			return
 
-		character_health = self.character.health
-
 		maximum = max(
 			1,
-			character_health.maximum,
+			self.character.health.maximum,
 		)
 		current = max(
 			0,
-			character_health.current,
-		)
-		temporary = max(
-			0,
-			character_health.temporary,
+			min(
+				self.character.health.current,
+				maximum,
+			),
 		)
 
 		self.health.setRange(0, maximum)
 		self.health.setValue(current)
 		self.health.setFormat(
-			f"{current} / {maximum}"
+			f"Здоровье  {current} / {maximum}"
 		)
-
-		if temporary > 0:
-			self.temporary_health.setText(
-				f"+{temporary} врем."
-			)
-			self.temporary_health.setToolTip(
-				f"Временное здоровье: {temporary}"
-			)
-			self.temporary_health.show()
-		else:
-			self.temporary_health.hide()
 
 	def update_stats(self) -> None:
 		if self.character is None:
@@ -525,6 +509,41 @@ class CharacterPanel(QFrame):
 				self.format_modifier(value),
 			)
 
+	def update_features(self) -> None:
+		self.features.clear()
+
+		if self.character is None:
+			return
+
+		if not self.character.features:
+			empty_item = QListWidgetItem(
+				"Особенности не заданы"
+			)
+			empty_item.setFlags(
+				empty_item.flags()
+				& ~Qt.ItemFlag.ItemIsEnabled
+			)
+
+			self.features.addItem(empty_item)
+			return
+
+		for feature in self.character.features:
+			item = QListWidgetItem(feature.title)
+
+			icon = load_feature_icon(
+				feature.icon_name
+			)
+
+			if not icon.isNull():
+				item.setIcon(icon)
+
+			if feature.description:
+				item.setToolTip(
+					feature.description
+				)
+
+			self.features.addItem(item)
+
 	def clear(self) -> None:
 		self.character = None
 
@@ -535,9 +554,10 @@ class CharacterPanel(QFrame):
 
 		self.health.setRange(0, 1)
 		self.health.setValue(0)
-		self.health.setFormat("0 / 0")
-
-		self.temporary_health.hide()
+		self.health.setFormat(
+			"Здоровье  0 / 0"
+		)
+		self.features.clear()
 
 		for label in self.stat_values.values():
 			label.setText("0")
@@ -602,6 +622,28 @@ class CharacterPanel(QFrame):
 			"Портрет\nне выбран"
 		)
 
+	def set_party(
+			self,
+			characters: list[Character],
+	) -> None:
+		self.party_members = list(characters)
+		self.update_party()
+
+	def update_party(self) -> None:
+		while self.party_layout.count():
+			layout_item = self.party_layout.takeAt(0)
+			widget = layout_item.widget()
+
+			if widget is not None:
+				widget.deleteLater()
+
+		for character in self.party_members:
+			self.party_layout.addWidget(
+				PartyMemberWidget(character)
+			)
+
+		self.party_layout.addStretch()
+
 	def create_section(self) -> tuple[QFrame, QVBoxLayout]:
 		frame = QFrame()
 
@@ -615,18 +657,6 @@ class CharacterPanel(QFrame):
 		section_layout.setSpacing(Spacing.SM)
 
 		return frame, section_layout
-
-	def create_title(self, text: str) -> QLabel:
-		label = QLabel(text)
-		label.setObjectName("sectionTitle")
-
-		font = QFont()
-		font.setPointSize(Fonts.SUBTITLE)
-		font.setBold(True)
-
-		label.setFont(font)
-
-		return label
 
 	@staticmethod
 	def format_modifier(value: int) -> str:

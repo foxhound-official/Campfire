@@ -5,6 +5,7 @@ from uuid import uuid4
 
 from dataclass_wizard import JSONWizard
 
+from app.models.character_feature import CharacterFeature
 from app.models.character_skills import CharacterSkills
 from app.models.character_stats import CharacterStats
 from app.models.effect import Effect
@@ -18,6 +19,7 @@ class Character(JSONWizard):
 
 	name: str = ""
 	portrait: str = ""
+	party_portrait: str = ""
 
 	race: str = ""
 	character_class: str = ""
@@ -36,6 +38,10 @@ class Character(JSONWizard):
 
 	skills: CharacterSkills = field(
 		default_factory=CharacterSkills
+	)
+
+	features: list[CharacterFeature] = field(
+		default_factory=list
 	)
 
 	inventory: list[Item] = field(default_factory=list)
