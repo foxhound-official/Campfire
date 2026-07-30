@@ -5,6 +5,8 @@ from uuid import uuid4
 
 from dataclass_wizard import JSONWizard
 
+from app.models.character_skills import CharacterSkills
+from app.models.character_stats import CharacterStats
 from app.models.effect import Effect
 from app.models.health import Health
 from app.models.item import Item
@@ -26,6 +28,14 @@ class Character(JSONWizard):
 			current=1,
 			maximum=1
 		)
+	)
+
+	stats: CharacterStats = field(
+		default_factory=CharacterStats
+	)
+
+	skills: CharacterSkills = field(
+		default_factory=CharacterSkills
 	)
 
 	inventory: list[Item] = field(default_factory=list)

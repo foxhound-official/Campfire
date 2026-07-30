@@ -88,4 +88,91 @@ def load_stylesheet() -> str:
         background: {Colors.DANGER};
     }}
 
+	QLabel#characterPortrait {{
+		background: {Colors.BACKGROUND};
+		border: 1px solid {Colors.BORDER};
+		border-radius: {Radius.MD}px;
+	}}
+	
+	QLabel#characterName {{
+		background: transparent;
+		border: none;
+		font-size: 20px;
+		font-weight: 700;
+		padding-bottom: 4px;
+	}}
+	
+	QLabel#identityCaption {{
+		background: transparent;
+		border: none;
+		font-size: 11px;
+	}}
+	
+	QLabel#identityValue {{
+		background: transparent;
+		border: none;
+		font-size: 14px;
+		font-weight: 600;
+	}}
+	
+	QLabel#levelBadge,
+	QLabel#temporaryHealth {{
+		background: {Colors.BACKGROUND};
+		border: 1px solid {Colors.BORDER};
+		border-radius: {Radius.MD}px;
+		font-weight: 600;
+	}}
+	
+	QLabel#temporaryHealth {{
+		padding: 2px 6px;
+	}}
+	
+	QProgressBar#characterHealth {{
+		min-height: 24px;
+		text-align: center;
+	}}
+
+    QFrame#statCell {{
+        background: {Colors.PANEL_LIGHT};
+        border: 1px solid {Colors.BORDER};
+        border-radius: {Radius.SM}px;
+    }}
+
+    QLabel#statName {{
+        background: transparent;
+        border: none;
+        color: {Colors.TEXT_SECONDARY};
+        font-size: 10px;
+        font-weight: 600;
+    }}
+
+    QLabel#statValue {{
+        background: transparent;
+        border: none;
+        color: {Colors.TEXT};
+        font-size: 16px;
+        font-weight: 700;
+    }}
+
+    QTreeWidget#characterSkills {{
+        background: {Colors.PANEL_LIGHT};
+        border: 1px solid {Colors.BORDER};
+        border-radius: {Radius.SM}px;
+        outline: none;
+    }}
+
+    QTreeWidget#characterSkills::item {{
+        background: transparent;
+        border-bottom: 1px solid {Colors.BORDER};
+        padding: 5px 4px;
+    }}
+
+    QTreeWidget#characterSkills::item:hover {{
+        background: {Colors.PANEL};
+    }}
+
+    QTreeWidget#characterSkills::branch {{
+        background: transparent;
+    }}
+
     """
