@@ -3,9 +3,11 @@ from app.models.campaign import Campaign
 from app.models.character import Character
 from app.models.character_skills import CharacterSkills
 from app.models.character_stats import CharacterStats
+from app.models.creature import Creature
 
 campaign = Campaign(
-	name="Dragon Fall"
+	name="Dragon Fall",
+	creatures=[]
 )
 
 campaign.characters.append(

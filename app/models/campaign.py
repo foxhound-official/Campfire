@@ -6,6 +6,7 @@ from uuid import uuid4
 from dataclass_wizard import JSONWizard
 
 from app.models.character import Character
+from app.models.creature import Creature
 
 
 @dataclass(slots=True)
@@ -15,5 +16,19 @@ class Campaign(JSONWizard):
 	name: str = "Новая кампания"
 
 	characters: list[Character] = field(default_factory=list)
+	creatures: list[Creature] = field(default_factory=list)
 
 	notes: str = ""
+
+	def find_character(
+			self,
+			character_id: str | None,
+	) -> Character | None:
+		if character_id is None:
+			return None
+
+		for character in self.characters:
+			if character.id == character_id:
+				return character
+
+		return None
