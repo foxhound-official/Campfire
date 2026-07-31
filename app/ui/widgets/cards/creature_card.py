@@ -1,4 +1,5 @@
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, Signal
+from PySide6.QtGui import QMouseEvent
 from PySide6.QtWidgets import QLabel, QProgressBar
 
 from app.models.creature import Creature
@@ -7,17 +8,22 @@ from app.ui.widgets.cards.card import Card
 
 
 class CreatureCard(Card):
+	selected = Signal(str)
 
 	def __init__(
 			self,
-			creature: Creature
+			creature: Creature,
 	):
 		super().__init__()
 
 		self.creature = creature
+		self._target_selection_enabled = False
+
 		self.name_label = QLabel()
 		self.name_label.setObjectName("cardTitle")
-		self.name_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+		self.name_label.setAlignment(
+			Qt.AlignmentFlag.AlignCenter
+		)
 
 		self.health_bar = QProgressBar()
 		self.health_bar.setObjectName("cardHealth")
@@ -25,6 +31,18 @@ class CreatureCard(Card):
 
 		self.content_layout.addWidget(self.name_label)
 		self.content_layout.addWidget(self.health_bar)
+
+		# Клик по любой части карточки обрабатывает
+		# сама CreatureCard.
+		for widget in (
+			self.image,
+			self.name_label,
+			self.health_bar,
+		):
+			widget.setAttribute(
+				Qt.WidgetAttribute.WA_TransparentForMouseEvents,
+				True,
+			)
 
 		self.refresh()
 
@@ -67,3 +85,40 @@ class CreatureCard(Card):
 			maximum_health=health.maximum,
 			temporary_health=health.temporary,
 		)
+
+	def set_target_selection_enabled(
+			self,
+			enabled: bool,
+	) -> None:
+		self._target_selection_enabled = enabled
+
+		self.setProperty(
+			"targetSelectable",
+			enabled,
+		)
+
+		self.setCursor(
+			Qt.CursorShape.PointingHandCursor
+			if enabled
+			else Qt.CursorShape.ArrowCursor
+		)
+
+		style = self.style()
+		style.unpolish(self)
+		style.polish(self)
+		self.update()
+
+	def mouseReleaseEvent(
+			self,
+			event: QMouseEvent,
+	) -> None:
+		if (
+			self._target_selection_enabled
+			and event.button()
+			== Qt.MouseButton.LeftButton
+		):
+			self.selected.emit(self.creature.id)
+			event.accept()
+			return
+
+		super().mouseReleaseEvent(event)

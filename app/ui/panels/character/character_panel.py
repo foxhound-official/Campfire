@@ -1,4 +1,4 @@
-from PySide6.QtCore import Qt, QSize
+from PySide6.QtCore import Qt, QSize, Signal
 from PySide6.QtGui import QWheelEvent
 from PySide6.QtWidgets import (
 	QAbstractItemView,
@@ -21,6 +21,7 @@ from app.theme.sizes import Sizes
 from app.theme.spacing import Spacing
 from app.ui.panels.character.party_member_widget import PartyMemberWidget
 
+
 class StaticTreeWidget(QTreeWidget):
 	def wheelEvent(
 			self,
@@ -28,12 +29,17 @@ class StaticTreeWidget(QTreeWidget):
 	) -> None:
 		event.ignore()
 
+
 class CharacterPanel(QFrame):
+	party_member_selected = Signal(str)
+
 	def __init__(self):
 		super().__init__()
 		self.setObjectName("characterPanel")
 		self.setFixedWidth(Sizes.CHARACTER_PANEL_WIDTH)
 		self.character: Character | None = None
+		self._party_targets_enabled = False
+		self.party_widgets: list[PartyMemberWidget] = []
 		self.party_members: list[Character] = []
 
 		layout = QVBoxLayout(self)
@@ -561,12 +567,34 @@ class CharacterPanel(QFrame):
 			if widget is not None:
 				widget.deleteLater()
 
+		self.party_widgets.clear()
+
 		for character in self.party_members:
-			self.party_layout.addWidget(
-				PartyMemberWidget(character)
+			party_widget = PartyMemberWidget(character)
+
+			party_widget.selected.connect(
+				self.party_member_selected.emit
 			)
 
+			party_widget.set_target_selection_enabled(
+				self._party_targets_enabled
+			)
+
+			self.party_widgets.append(party_widget)
+			self.party_layout.addWidget(party_widget)
+
 		self.party_layout.addStretch()
+
+	def set_character_targets_enabled(
+			self,
+			enabled: bool,
+	) -> None:
+		self._party_targets_enabled = enabled
+
+		for party_widget in self.party_widgets:
+			party_widget.set_target_selection_enabled(
+				enabled
+			)
 
 	def create_section_title(
 			self,

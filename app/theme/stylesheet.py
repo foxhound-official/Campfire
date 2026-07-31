@@ -97,17 +97,26 @@ def load_stylesheet() -> str:
 		border: 1px solid {Colors.BORDER};
 		border-radius: {Radius.MD}px;
 	}}
-	
+
 	QFrame#card:hover {{
 		border-color: {Colors.ACCENT_HOVER};
 	}}
-	
+
+	QFrame#card[targetSelectable="true"] {{
+		border: 3px solid {Colors.TARGET_HIGHLIGHT};
+	}}
+
+	QFrame#card[targetSelectable="true"]:hover {{
+		background: {Colors.PANEL_LIGHT};
+		border: 4px solid {Colors.TARGET_HIGHLIGHT};
+	}}
+
 	QLabel#cardImage {{
 		background: {Colors.PANEL_DARK};
 		border: none;
 		border-radius: {Radius.SM}px;
 	}}
-	
+
 	QLabel#cardTitle {{
 		background: transparent;
 		border: none;
@@ -244,14 +253,19 @@ def load_stylesheet() -> str:
         border: none;
     }}
 
-    QLabel#partyMemberPortrait {{
-        background: {Colors.PANEL_LIGHT};
-        border: 1px solid {Colors.BORDER};
-        border-radius: {Radius.SM}px;
-        color: {Colors.TEXT_SECONDARY};
-        font-size: 14px;
-        font-weight: 700;
-    }}
+	QLabel#partyMemberPortrait {{
+		background: {Colors.PANEL_LIGHT};
+		border: none;
+		border-radius: {Radius.SM}px;
+		color: {Colors.TEXT_SECONDARY};
+		font-size: 14px;
+		font-weight: 700;
+	}}
+
+	QWidget#partyMember[targetSelectable="true"]:hover
+	QLabel#partyMemberPortrait {{
+		border: 4px solid {Colors.TARGET_HIGHLIGHT};
+	}}
 
     QProgressBar#partyMemberHealth {{
         min-height: 4px;
@@ -378,6 +392,86 @@ def load_stylesheet() -> str:
 
 		font-size: 16px;
 		font-weight: 500;
+	}}
+
+	QFrame#targetSelectionPrompt {{
+		background: rgba(24, 25, 28, 235);
+		border: 2px solid {Colors.TARGET_HIGHLIGHT};
+		border-radius: {Radius.MD}px;
+	}}
+
+	QLabel#targetSelectionMessage {{
+		background: transparent;
+		border: none;
+		color: {Colors.TEXT_ON_DARK};
+		font-size: 14px;
+		font-weight: 600;
+	}}
+
+	QPushButton#targetSelectionCancel {{
+		background: {Colors.PANEL_LIGHT};
+		border: 1px solid {Colors.BORDER};
+		border-radius: {Radius.SM}px;
+		color: {Colors.TEXT};
+		padding: 6px 12px;
+		font-weight: 600;
+	}}
+
+	QPushButton#targetSelectionCancel:hover {{
+		background: {Colors.BORDER};
+		border-color: {Colors.TARGET_HIGHLIGHT};
+		color: {Colors.TEXT};
+	}}
+
+	QDialog#actionConfirmationDialog {{
+		background: {Colors.PANEL};
+	}}
+	
+	QLabel#actionConfirmationTitle {{
+		background: transparent;
+		border: none;
+		color: {Colors.TEXT_ON_DARK};
+		font-size: 18px;
+		font-weight: 700;
+	}}
+	
+	QLabel#actionConfirmationText {{
+		background: transparent;
+		border: none;
+		color: {Colors.TEXT_ON_DARK};
+		font-size: 14px;
+	}}
+	
+	QLabel#actionConfirmationTarget {{
+		background: {Colors.PANEL_LIGHT};
+		border: 2px solid {Colors.TARGET_HIGHLIGHT};
+		border-radius: {Radius.SM}px;
+		color: {Colors.TEXT_ON_DARK};
+		font-size: 14px;
+		font-weight: 600;
+		padding: 10px;
+	}}
+	
+	QPushButton#actionConfirmationCancel {{
+		background: {Colors.PANEL_LIGHT};
+		border: 1px solid {Colors.BORDER};
+		border-radius: {Radius.SM}px;
+		color: {Colors.TEXT_ON_DARK};
+		padding: 8px 16px;
+	}}
+	
+	QPushButton#actionConfirmationConfirm {{
+		background: {Colors.TARGET_HIGHLIGHT};
+		border: 1px solid {Colors.TARGET_HIGHLIGHT};
+		border-radius: {Radius.SM}px;
+		color: {Colors.BACKGROUND};
+		font-weight: 700;
+		padding: 8px 16px;
+	}}
+	
+	QPushButton#actionConfirmationCancel:hover,
+	QPushButton#actionConfirmationConfirm:hover {{
+		border: 2px solid {Colors.TEXT_ON_DARK};
 	}}
 
     """

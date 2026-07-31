@@ -23,6 +23,7 @@ from app.ui.widgets.cards import ItemCard
 class InventoryPanel(QFrame):
 	ANIMATION_DURATION = 300
 
+	item_activated = Signal(str)
 	expanded_changed = Signal(bool)
 
 	def __init__(self):
@@ -163,9 +164,13 @@ class InventoryPanel(QFrame):
 		)
 
 		for item in self.character.inventory:
-			self.items_layout.addWidget(
-				ItemCard(item)
+			card = ItemCard(item)
+
+			card.activated.connect(
+				self.item_activated.emit
 			)
+
+			self.items_layout.addWidget(card)
 
 	def toggle(self) -> None:
 		self.set_expanded(

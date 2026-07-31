@@ -1,4 +1,4 @@
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import QHBoxLayout
 
 from app.models.creature import Creature
@@ -12,8 +12,12 @@ from app.ui.widgets.cards import CreatureCard
 class BattleScene(BaseScene):
 	MAX_CREATURE_CARDS = 5
 
+	creature_selected = Signal(str)
+
 	def __init__(self):
 		super().__init__("Поле боя")
+
+		self._creature_targets_enabled = False
 
 		self.cards_layout = QHBoxLayout()
 		self.cards_layout.setContentsMargins(0, 0, 0, 0)
@@ -50,12 +54,31 @@ class BattleScene(BaseScene):
 		self._clear_creature_cards()
 
 		for creature in creatures[
-				:self.MAX_CREATURE_CARDS
+			:self.MAX_CREATURE_CARDS
 		]:
 			card = CreatureCard(creature)
 
+			card.selected.connect(
+				self.creature_selected.emit
+			)
+
+			card.set_target_selection_enabled(
+				self._creature_targets_enabled
+			)
+
 			self.creature_cards.append(card)
 			self.cards_layout.addWidget(card)
+
+	def set_creature_targets_enabled(
+			self,
+			enabled: bool,
+	) -> None:
+		self._creature_targets_enabled = enabled
+
+		for card in self.creature_cards:
+			card.set_target_selection_enabled(
+				enabled
+			)
 
 	def _clear_creature_cards(self) -> None:
 		for card in self.creature_cards:

@@ -3,6 +3,7 @@ import sys
 from PySide6.QtGui import QShortcut, QKeySequence
 from PySide6.QtWidgets import QApplication
 
+from app.models.action_target_type import ActionTargetType
 from app.models.campaign import Campaign
 from app.models.character import Character
 from app.models.character_feature import CharacterFeature
@@ -75,6 +76,10 @@ def create_preview_campaign() -> Campaign:
 				),
 				image_name="item_healing_potion",
 				quantity=2,
+				target_types=[
+					ActionTargetType.CHARACTER,
+					ActionTargetType.CREATURE,
+				],
 			),
 			Item(
 				name="Серебряный ключ",
@@ -82,6 +87,9 @@ def create_preview_campaign() -> Campaign:
 					"Холодный ключ с гербом крепости."
 				),
 				image_name="item_silver_key",
+				target_types=[
+					ActionTargetType.CREATURE,
+				],
 			),
 			Item(
 				name="Свиток огненной волны",
@@ -89,10 +97,12 @@ def create_preview_campaign() -> Campaign:
 					"Одноразовое заклинание по области."
 				),
 				image_name="item_fire_wave_scroll",
+				target_types=[
+					ActionTargetType.CHARACTER,
+				],
 			),
 		],
 	)
-
 	return Campaign(
 		name="Предпросмотр интерфейса",
 		characters=[

@@ -1,7 +1,5 @@
-from pathlib import Path
-
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QPixmap
+from PySide6.QtCore import Qt, Signal, QRectF
+from PySide6.QtGui import QMouseEvent, QPainter, QPaintEvent, QColor, QPen
 from PySide6.QtWidgets import (
 	QLabel,
 	QProgressBar,
@@ -10,30 +8,24 @@ from PySide6.QtWidgets import (
 )
 
 from app.models.character import Character
-from app.theme.images import load_cover_pixmap, PARTY_PORTRAITS
+from app.theme.colors import Colors
+from app.theme.images import (
+	PARTY_PORTRAITS,
+	load_cover_pixmap,
+)
+from app.theme.radius import Radius
 from app.theme.sizes import Sizes
 from app.theme.spacing import Spacing
 
 
-PARTY_PORTRAITS_PATH = (
-	Path(__file__).resolve().parents[3]
-	/ "assets"
-	/ "portraits"
-	/ "party"
-)
-
-PARTY_PORTRAIT_EXTENSIONS = (
-	".png",
-	".webp",
-	".jpg",
-	".jpeg",
-)
-
-
 class PartyMemberWidget(QWidget):
+	selected = Signal(str)
 
 	def __init__(self, character: Character):
 		super().__init__()
+
+		self.character_id = character.id
+		self._target_selection_enabled = False
 
 		self.setObjectName("partyMember")
 		self.setFixedSize(
@@ -45,7 +37,7 @@ class PartyMemberWidget(QWidget):
 		layout.setContentsMargins(0, 0, 0, 0)
 		layout.setSpacing(Spacing.XS)
 
-		self.portrait = QLabel()
+		self.portrait = PartyPortraitLabel()
 		self.portrait.setObjectName(
 			"partyMemberPortrait"
 		)
@@ -67,15 +59,28 @@ class PartyMemberWidget(QWidget):
 			Sizes.PARTY_HEALTH_HEIGHT,
 		)
 
+		# Клики по дочерним элементам обрабатывает
+		# сам PartyMemberWidget.
+		self.portrait.setAttribute(
+			Qt.WidgetAttribute.WA_TransparentForMouseEvents,
+			True,
+		)
+		self.health.setAttribute(
+			Qt.WidgetAttribute.WA_TransparentForMouseEvents,
+			True,
+		)
+
 		layout.addWidget(self.portrait)
 		layout.addWidget(self.health)
 
 		self.update_character(character)
 
 	def update_character(
-		self,
-		character: Character,
+			self,
+			character: Character,
 	) -> None:
+		self.character_id = character.id
+
 		maximum = max(
 			1,
 			character.health.maximum,
@@ -93,51 +98,28 @@ class PartyMemberWidget(QWidget):
 
 		name = character.name or "Без имени"
 		character_class = (
-			character.character_class
-			or "Класс не указан"
+				character.character_class
+				or "Класс не указан"
 		)
 
-		tooltip = (
+		self.setToolTip(
 			f"{name}\n"
 			f"{character_class}, {character.level} ур.\n"
 			f"Здоровье: {current} / {maximum}"
 		)
 
-		if character.health.temporary > 0:
-			tooltip += (
-				f"\nВременное здоровье: "
-				f"+{character.health.temporary}"
-			)
-
-		self.setToolTip(tooltip)
-
 		self.update_portrait(
-			character.party_portrait,
+			character.party_portrait
+			or character.portrait,
 			name,
 		)
 
 	def update_portrait(
-		self,
-		portrait_name: str,
-		character_name: str,
+			self,
+			portrait_name: str,
+			character_name: str,
 	) -> None:
 		self.portrait.clear()
-
-		initial = (
-			character_name.strip()[:1].upper()
-			or "?"
-		)
-		self.portrait.setText(initial)
-
-		if not portrait_name:
-			return
-
-		portrait_path = self.find_portrait(
-			portrait_name
-		)
-
-		if portrait_path is None:
-			return
 
 		pixmap = load_cover_pixmap(
 			PARTY_PORTRAITS,
@@ -146,52 +128,106 @@ class PartyMemberWidget(QWidget):
 		)
 
 		if pixmap.isNull():
+			initial = (
+					character_name.strip()[:1].upper()
+					or "?"
+			)
+			self.portrait.setText(initial)
 			return
 
-		target_size = self.portrait.size()
+		self.portrait.setPixmap(pixmap)
 
-		scaled_pixmap = pixmap.scaled(
-			target_size,
-			Qt.AspectRatioMode.KeepAspectRatioByExpanding,
-			Qt.TransformationMode.SmoothTransformation,
+	def set_target_selection_enabled(
+			self,
+			enabled: bool,
+	) -> None:
+		self._target_selection_enabled = enabled
+
+		self.portrait.set_target_selection_enabled(
+			enabled
 		)
 
-		crop_x = max(
-			0,
-			(
-				scaled_pixmap.width()
-				- target_size.width()
-			) // 2,
-		)
-		crop_y = max(
-			0,
-			(
-				scaled_pixmap.height()
-				- target_size.height()
-			) // 2,
+		self.setCursor(
+			Qt.CursorShape.PointingHandCursor
+			if enabled
+			else Qt.CursorShape.ArrowCursor
 		)
 
-		self.portrait.setText("")
-		self.portrait.setPixmap(
-			scaled_pixmap.copy(
-				crop_x,
-				crop_y,
-				target_size.width(),
-				target_size.height(),
+		for widget in (
+				self,
+				self.portrait,
+		):
+			style = widget.style()
+			style.unpolish(widget)
+			style.polish(widget)
+			widget.update()
+
+	def mouseReleaseEvent(
+			self,
+			event: QMouseEvent,
+	) -> None:
+		if (
+				self._target_selection_enabled
+				and event.button()
+				== Qt.MouseButton.LeftButton
+		):
+			self.selected.emit(self.character_id)
+			event.accept()
+			return
+
+		super().mouseReleaseEvent(event)
+
+
+class PartyPortraitLabel(QLabel):
+
+	def __init__(self):
+		super().__init__()
+
+		self._target_selection_enabled = False
+
+	def set_target_selection_enabled(
+			self,
+			enabled: bool,
+	) -> None:
+		self._target_selection_enabled = enabled
+		self.update()
+
+	def paintEvent(
+			self,
+			event: QPaintEvent,
+	) -> None:
+		super().paintEvent(event)
+
+		if not self._target_selection_enabled:
+			return
+
+		border_width = 4
+
+		painter = QPainter(self)
+		painter.setRenderHint(
+			QPainter.RenderHint.Antialiasing
+		)
+		painter.setBrush(
+			Qt.BrushStyle.NoBrush
+		)
+		painter.setPen(
+			QPen(
+				QColor(Colors.TARGET_HIGHLIGHT),
+				border_width,
 			)
 		)
 
-	@staticmethod
-	def find_portrait(
-		portrait_name: str,
-	) -> Path | None:
-		for extension in PARTY_PORTRAIT_EXTENSIONS:
-			portrait_path = (
-				PARTY_PORTRAITS_PATH
-				/ f"{portrait_name}{extension}"
-			)
+		inset = border_width / 2 - 2
 
-			if portrait_path.is_file():
-				return portrait_path
+		rect = QRectF(self.rect()).adjusted(
+			inset,
+			inset,
+			-inset,
+			-inset,
+		)
 
-		return None
+		painter.drawRoundedRect(
+			rect,
+			Radius.SM,
+			Radius.SM,
+		)

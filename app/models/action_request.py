@@ -2,8 +2,6 @@ from dataclasses import dataclass, field
 from enum import Enum
 from uuid import uuid4
 
-from dataclass_wizard import JSONWizard
-
 from app.models.action_target_type import (
 	ActionTargetType,
 )
@@ -21,12 +19,12 @@ class ActionRequestStatus(str, Enum):
 
 
 @dataclass(slots=True)
-class ActionRequest(JSONWizard):
+class ActionRequest:
 	action_type: ActionType
 	character_id: str
+	target_type: ActionTargetType
+	target_id: str
 
-	target_type: ActionTargetType | None = None
-	target_id: str | None = None
 	item_id: str | None = None
 
 	id: str = field(
