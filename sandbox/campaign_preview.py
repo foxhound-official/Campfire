@@ -179,6 +179,10 @@ def create_preview_campaign() -> Campaign:
 			SceneData(
 				scene_type=SceneType.NARRATION,
 				title="Лес перед бурей",
+				music=(
+					"app/assets/music/"
+					"forest_ambient.mp3"
+				),
 				description=(
 					"Дорога постепенно исчезает под корнями "
 					"старых деревьев. Впереди слышится треск "
@@ -188,6 +192,10 @@ def create_preview_campaign() -> Campaign:
 			SceneData(
 				scene_type=SceneType.BATTLE,
 				title="Засада на лесном тракте",
+				music=(
+					"app/assets/music/"
+					"forest_battle.mp3"
+				),
 				creatures=[
 					Creature(
 						name="Гоблин",

@@ -6,6 +6,8 @@ from PySide6.QtWidgets import (
 	QWidget, QGridLayout,
 )
 
+from app.core.music_player import MusicPlayer
+from app.core.sound_player import SoundPlayer
 from app.models.campaign import Campaign
 from app.models.scene_data import SceneData
 from app.models.scene_type import SceneType
@@ -35,6 +37,8 @@ class MainWindow(QMainWindow):
 			else Campaign()
 		)
 		self.active_character_id = active_character_id
+		self.music_player = MusicPlayer(self)
+		self.sound_player = SoundPlayer(self)
 
 		self.setWindowTitle("Campfire")
 		self.resize(
@@ -43,6 +47,7 @@ class MainWindow(QMainWindow):
 		)
 		self._create_scenes()
 		self._create_ui()
+		self._configure_sounds()
 		self.refresh_campaign()
 
 	def _create_scenes(self) -> None:
@@ -156,3 +161,42 @@ class MainWindow(QMainWindow):
 		self.scene_stack.setCurrentWidget(
 			scene_view
 		)
+
+		self.music_player.play(
+			scene_data.music
+		)
+
+	def _configure_sounds(self) -> None:
+		self.sound_player.register(
+			"button_click",
+			"app/assets/sounds/button_click.wav",
+			volume=0.35,
+		)
+		self.sound_player.register(
+			"inventory_open",
+			"app/assets/sounds/inventory_open.wav",
+			volume=0.55,
+		)
+		self.sound_player.register(
+			"inventory_close",
+			"app/assets/sounds/inventory_close.wav",
+			volume=0.55,
+		)
+
+		self.inventory_panel.expanded_changed.connect(
+			self._play_inventory_sound
+		)
+
+	def _play_inventory_sound(
+			self,
+			expanded: bool,
+	) -> None:
+		sound_name = (
+			"inventory_open"
+			if expanded
+			else "inventory_close"
+		)
+
+		print("sound played:" + sound_name)
+
+		self.sound_player.play(sound_name)

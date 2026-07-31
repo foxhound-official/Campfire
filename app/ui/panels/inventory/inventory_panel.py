@@ -1,7 +1,7 @@
 from PySide6.QtCore import (
 	QEasingCurve,
 	QPropertyAnimation,
-	Qt,
+	Qt, Signal,
 )
 from PySide6.QtWidgets import (
 	QFrame,
@@ -22,6 +22,8 @@ from app.ui.widgets.cards import ItemCard
 
 class InventoryPanel(QFrame):
 	ANIMATION_DURATION = 300
+
+	expanded_changed = Signal(bool)
 
 	def __init__(self):
 		super().__init__()
@@ -178,6 +180,8 @@ class InventoryPanel(QFrame):
 			return
 
 		self.is_expanded = expanded
+		self.expanded_changed.emit(expanded)
+
 		self.width_animation.stop()
 
 		start_width = self.content.maximumWidth()
