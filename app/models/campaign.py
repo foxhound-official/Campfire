@@ -10,9 +10,12 @@ from app.models.creature import Creature
 from app.models.scene_data import SceneData
 from app.models.scene_type import SceneType
 
+CURRENT_SCHEMA_VERSION = 1
 
 @dataclass(slots=True)
 class Campaign(JSONWizard):
+	schema_version: int = CURRENT_SCHEMA_VERSION
+
 	id: str = field(default_factory=lambda: str(uuid4()))
 
 	name: str = "Новая кампания"

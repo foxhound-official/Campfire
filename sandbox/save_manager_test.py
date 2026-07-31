@@ -1,10 +1,7 @@
 import json
-import sys
 from collections.abc import Callable
 from pathlib import Path
 from tempfile import TemporaryDirectory
-
-from PySide6.QtWidgets import QApplication
 
 from app.core.save_manager import (
 	InvalidSaveError,
@@ -15,8 +12,6 @@ from app.core.save_manager import (
 from app.models.campaign import (
 	CURRENT_SCHEMA_VERSION,
 )
-from app.theme.stylesheet import load_stylesheet
-from app.ui.main_window import MainWindow
 from sandbox.campaign_preview import (
 	create_preview_campaign,
 )
@@ -84,16 +79,42 @@ def run_tests() -> None:
 			CURRENT_SCHEMA_VERSION + 1
 		)
 
+		save_path.write_text(
+			json.dumps(
+				raw_data,
+				ensure_ascii=False,
+				indent=4,
+			),
+			encoding="utf-8",
+		)
 
-def main() -> None:
-	app = QApplication(sys.argv)
-	app.setStyleSheet(load_stylesheet())
+		assert_raises(
+			UnsupportedSaveVersionError,
+			lambda: manager.load_campaign(
+				save_path
+			),
+		)
 
-	window = MainWindow()
-	window.show()
+		save_path.write_text(
+			"{ damaged json",
+			encoding="utf-8",
+		)
 
-	sys.exit(app.exec())
+		assert_raises(
+			InvalidSaveError,
+			lambda: manager.load_campaign(
+				save_path
+			),
+		)
+
+		assert_raises(
+			SaveNotFoundError,
+			lambda: manager.load_campaign(
+				Path(directory) / "missing.json"
+			),
+		)
 
 
 if __name__ == "__main__":
-	main()
+	run_tests()
+	print("Save manager checks passed")

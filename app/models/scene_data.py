@@ -24,3 +24,16 @@ class SceneData(JSONWizard):
 	creatures: list[Creature] = field(
 		default_factory=list
 	)
+
+	def find_creature(
+			self,
+			creature_id: str | None,
+	) -> Creature | None:
+		if creature_id is None:
+			return None
+
+		for creature in self.creatures:
+			if creature.id == creature_id:
+				return creature
+
+		return None
