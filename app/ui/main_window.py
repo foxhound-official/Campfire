@@ -451,7 +451,9 @@ class MainWindow(QMainWindow):
 			)
 
 		if target_type is ActionTargetType.CREATURE:
-			creature = self.campaign.find_creature(
+			scene = self.campaign.get_active_scene()
+
+			creature = scene.find_creature(
 				target_id
 			)
 
