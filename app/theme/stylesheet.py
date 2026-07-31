@@ -368,4 +368,16 @@ def load_stylesheet() -> str:
     	font-weight: 700;
     }}
 
+	QLabel#narrationText {{
+		background: rgba(30, 20, 14, 215);
+		border: 1px solid rgba(188, 146, 86, 180);
+		border-radius: {Radius.LG}px;
+
+		color: {Colors.TEXT_ON_DARK};
+		padding: 24px 32px;
+
+		font-size: 16px;
+		font-weight: 500;
+	}}
+
     """

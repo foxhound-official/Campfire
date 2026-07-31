@@ -7,6 +7,7 @@ from PySide6.QtWidgets import (
 	QWidget,
 )
 
+from app.models.scene_data import SceneData
 from app.theme.spacing import Spacing
 
 
@@ -14,6 +15,8 @@ class BaseScene(QWidget):
 
 	def __init__(self, title: str):
 		super().__init__()
+
+		self.scene_data: SceneData | None = None
 
 		self.background = QLabel()
 		self.background.setObjectName("sceneBackground")
@@ -53,8 +56,21 @@ class BaseScene(QWidget):
 		# Overlay должен находиться поверх фона
 		stack.setCurrentWidget(self.overlay)
 
-	def set_title(self, text: str):
+	def set_scene(
+			self,
+			scene_data: SceneData,
+	) -> None:
+		self.scene_data = scene_data
+
+		self.set_title(scene_data.title)
+		self.set_background(scene_data.background)
+
+	def set_title(self, text: str) -> None:
 		self.banner.setText(text)
 
-	def set_background(self, path: str):
+	def set_background(self, path: str) -> None:
+		if not path:
+			self.background.clear()
+			return
+
 		self.background.setPixmap(QPixmap(path))

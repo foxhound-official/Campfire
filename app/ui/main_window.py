@@ -7,6 +7,7 @@ from PySide6.QtWidgets import (
 )
 
 from app.models.campaign import Campaign
+from app.models.scene_data import SceneData
 from app.models.scene_type import SceneType
 from app.theme.sizes import Sizes
 from app.ui.panels.character.character_panel import CharacterPanel
@@ -52,15 +53,15 @@ class MainWindow(QMainWindow):
 		self.narration_scene = NarrationScene()
 		self.puzzle_scene = PuzzleScene()
 
-		self.scenes = {
+		self.scene_views = {
 			SceneType.BATTLE: self.battle_scene,
 			SceneType.MERCHANT: self.merchant_scene,
 			SceneType.NARRATION: self.narration_scene,
 			SceneType.PUZZLE: self.puzzle_scene,
 		}
 
-		for scene in self.scenes.values():
-			self.scene_stack.addWidget(scene)
+		for scene_view in self.scene_views.values():
+			self.scene_stack.addWidget(scene_view)
 
 	def _create_ui(self) -> None:
 		central = QWidget()
@@ -101,15 +102,11 @@ class MainWindow(QMainWindow):
 		self.setCentralWidget(central)
 
 	def refresh_campaign(self) -> None:
-		self.set_scene(
-			self.campaign.active_scene
+		self._show_scene(
+			self.campaign.get_active_scene()
 		)
 
 		characters = self.campaign.characters
-
-		self.battle_scene.set_creatures(
-			self.campaign.creatures
-		)
 
 		self.character_panel.set_party(characters)
 
@@ -138,10 +135,24 @@ class MainWindow(QMainWindow):
 
 	def set_scene(
 			self,
-			scene_type: SceneType,
+			scene_id: str,
 	) -> None:
-		self.campaign.active_scene = scene_type
+		scene_data = self.campaign.set_active_scene(
+			scene_id
+		)
+
+		self._show_scene(scene_data)
+
+	def _show_scene(
+			self,
+			scene_data: SceneData,
+	) -> None:
+		scene_view = self.scene_views[
+			scene_data.scene_type
+		]
+
+		scene_view.set_scene(scene_data)
 
 		self.scene_stack.setCurrentWidget(
-			self.scenes[scene_type]
+			scene_view
 		)

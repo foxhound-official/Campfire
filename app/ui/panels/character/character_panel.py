@@ -1,4 +1,5 @@
 from PySide6.QtCore import Qt, QSize
+from PySide6.QtGui import QWheelEvent
 from PySide6.QtWidgets import (
 	QAbstractItemView,
 	QFrame,
@@ -20,6 +21,12 @@ from app.theme.sizes import Sizes
 from app.theme.spacing import Spacing
 from app.ui.panels.character.party_member_widget import PartyMemberWidget
 
+class StaticTreeWidget(QTreeWidget):
+	def wheelEvent(
+			self,
+			event: QWheelEvent,
+	) -> None:
+		event.ignore()
 
 class CharacterPanel(QFrame):
 	def __init__(self):
@@ -201,7 +208,7 @@ class CharacterPanel(QFrame):
 
 		stats_layout.addLayout(stats_row)
 
-		self.skill_table = QTreeWidget()
+		self.skill_table = StaticTreeWidget()
 		self.skill_table.setObjectName("characterSkills")
 		self.skill_table.setColumnCount(4)
 		self.skill_table.setHeaderHidden(True)

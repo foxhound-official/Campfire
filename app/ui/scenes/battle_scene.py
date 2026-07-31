@@ -2,6 +2,8 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QHBoxLayout
 
 from app.models.creature import Creature
+from app.models.scene_data import SceneData
+from app.models.scene_type import SceneType
 from app.theme.spacing import Spacing
 from app.ui.scenes.base_scene import BaseScene
 from app.ui.widgets.cards import CreatureCard
@@ -25,6 +27,21 @@ class BattleScene(BaseScene):
 		self.content_layout.addStretch()
 		self.content_layout.addLayout(self.cards_layout)
 		self.content_layout.addStretch()
+
+	def set_scene(
+			self,
+			scene_data: SceneData,
+	) -> None:
+		if scene_data.scene_type is not SceneType.BATTLE:
+			raise ValueError(
+				"BattleScene принимает только боевые сцены"
+			)
+
+		super().set_scene(scene_data)
+
+		self.set_creatures(
+			scene_data.creatures
+		)
 
 	def set_creatures(
 			self,

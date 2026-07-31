@@ -1,5 +1,6 @@
 import sys
 
+from PySide6.QtGui import QShortcut, QKeySequence
 from PySide6.QtWidgets import QApplication
 
 from app.models.campaign import Campaign
@@ -10,6 +11,8 @@ from app.models.character_stats import CharacterStats
 from app.models.creature import Creature
 from app.models.health import Health
 from app.models.item import Item
+from app.models.scene_data import SceneData
+from app.models.scene_type import SceneType
 from app.theme.stylesheet import load_stylesheet
 from app.ui.main_window import MainWindow
 
@@ -172,6 +175,47 @@ def create_preview_campaign() -> Campaign:
 				),
 			),
 		],
+		scenes=[
+			SceneData(
+				scene_type=SceneType.NARRATION,
+				title="Лес перед бурей",
+				description=(
+					"Дорога постепенно исчезает под корнями "
+					"старых деревьев. Впереди слышится треск "
+					"веток, а между стволами мелькают силуэты."
+				),
+			),
+			SceneData(
+				scene_type=SceneType.BATTLE,
+				title="Засада на лесном тракте",
+				creatures=[
+					Creature(
+						name="Гоблин",
+						portrait="creature_goblin",
+						health=Health(
+							current=7,
+							maximum=7,
+						),
+					),
+					Creature(
+						name="Орк",
+						portrait="creature_orc",
+						health=Health(
+							current=15,
+							maximum=15,
+						),
+					),
+					Creature(
+						name="Волк",
+						portrait="creature_wolf",
+						health=Health(
+							current=8,
+							maximum=11,
+						),
+					),
+				],
+			),
+		],
 	)
 
 
@@ -184,6 +228,32 @@ def main() -> None:
 		campaign=campaign,
 		active_character_id=campaign.characters[0].id,
 	)
+	narration_scene, battle_scene = campaign.scenes
+
+	narration_shortcut = QShortcut(
+		QKeySequence("1"),
+		window,
+	)
+	narration_shortcut.activated.connect(
+		lambda: window.set_scene(
+			narration_scene.id
+		)
+	)
+
+	battle_shortcut = QShortcut(
+		QKeySequence("2"),
+		window,
+	)
+	battle_shortcut.activated.connect(
+		lambda: window.set_scene(
+			battle_scene.id
+		)
+	)
+
+	window.setWindowTitle(
+		"Campfire — 1: история, 2: бой"
+	)
+
 	window.show()
 
 	sys.exit(app.exec())
