@@ -1,16 +1,37 @@
 class Colors:
-	BACKGROUND = "#202124"
+	# Тёмные поверхности — обложка и углубления
 
-	PANEL = "#2A2B2F"
-	PANEL_LIGHT = "#323338"
+	BACKGROUND = "#18120E"
+	BACKGROUND_LIGHT = "#2A2017"
 
-	BORDER = "#4A4B50"
+	# Светлые поверхности — страницы
 
-	TEXT = "#FFFFFF"
-	TEXT_SECONDARY = "#B8B8B8"
+	PANEL = "#C7B58E"
+	PANEL_LIGHT = "#D8C8A5"
+	PANEL_DARK = "#AD956D"
 
-	ACCENT = "#E09F3E"
+	# Границы страниц
 
-	SUCCESS = "#4CAF50"
-	WARNING = "#FFC107"
-	DANGER = "#F44336"
+	BORDER = "#6D5133"
+	BORDER_LIGHT = "#92734C"
+
+	# Чернила
+
+	TEXT = "#2A2118"
+	TEXT_SECONDARY = "#6A5943"
+	TEXT_ON_DARK = "#EADDBF"
+
+	# Бронзовые акценты
+
+	ACCENT = "#9C6A32"
+	ACCENT_HOVER = "#B78443"
+
+	# Состояния
+
+	SUCCESS = "#5C7147"
+	WARNING = "#A06D2D"
+	DANGER = "#7A3028"
+
+	# Затемнение поверх изображения сцены
+
+	OVERLAY = "rgba(24, 16, 11, 205)"

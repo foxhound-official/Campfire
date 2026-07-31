@@ -1,7 +1,4 @@
-from pathlib import Path
-
 from PySide6.QtCore import Qt, QSize
-from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import (
 	QAbstractItemView,
 	QFrame,
@@ -18,6 +15,7 @@ from PySide6.QtWidgets import (
 
 from app.models.character import Character
 from app.theme.icons import load_feature_icon
+from app.theme.images import load_cover_pixmap, CHARACTER_PORTRAITS
 from app.theme.sizes import Sizes
 from app.theme.spacing import Spacing
 from app.ui.panels.character.party_member_widget import PartyMemberWidget
@@ -26,11 +24,10 @@ from app.ui.panels.character.party_member_widget import PartyMemberWidget
 class CharacterPanel(QFrame):
 	def __init__(self):
 		super().__init__()
-
+		self.setObjectName("characterPanel")
+		self.setFixedWidth(Sizes.CHARACTER_PANEL_WIDTH)
 		self.character: Character | None = None
 		self.party_members: list[Character] = []
-
-		self.setFixedWidth(Sizes.CHARACTER_PANEL_WIDTH)
 
 		layout = QVBoxLayout(self)
 		layout.setContentsMargins(
@@ -43,9 +40,7 @@ class CharacterPanel(QFrame):
 
 		# Portrait
 
-		self.portrait = QLabel(
-			"Портрет\nне выбран"
-		)
+		self.portrait = QLabel("Портрет\nне выбран")
 		self.portrait.setObjectName("characterPortrait")
 		self.portrait.setAlignment(Qt.AlignmentFlag.AlignCenter)
 		self.portrait.setFixedSize(
@@ -65,12 +60,12 @@ class CharacterPanel(QFrame):
 
 		self.name = QLabel("Персонаж не выбран")
 		self.name.setObjectName("characterName")
-		self.name.setAlignment(
-			Qt.AlignmentFlag.AlignCenter
-		)
+		self.name.setAlignment(Qt.AlignmentFlag.AlignCenter)
 		self.name.setWordWrap(True)
 
 		identity_layout.addWidget(self.name)
+
+		# Race and class
 
 		meta_layout = QHBoxLayout()
 		meta_layout.setContentsMargins(0, 0, 0, 0)
@@ -144,9 +139,7 @@ class CharacterPanel(QFrame):
 
 		self.health = QProgressBar()
 		self.health.setObjectName("characterHealth")
-		self.health.setFixedHeight(
-			Sizes.HEALTH_BAR_HEIGHT
-		)
+		self.health.setFixedHeight(Sizes.HEALTH_BAR_HEIGHT)
 		self.health.setTextVisible(True)
 
 		health_layout.addWidget(self.health)
@@ -155,6 +148,10 @@ class CharacterPanel(QFrame):
 		# Main stats
 
 		stats_frame, stats_layout = self.create_section()
+
+		stats_layout.addWidget(
+			self.create_section_title("Характеристики")
+		)
 
 		stats_row = QHBoxLayout()
 		stats_row.setContentsMargins(0, 0, 0, 0)
@@ -186,15 +183,11 @@ class CharacterPanel(QFrame):
 
 			name_label = QLabel(short_name)
 			name_label.setObjectName("statName")
-			name_label.setAlignment(
-				Qt.AlignmentFlag.AlignCenter
-			)
+			name_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
 			value_label = QLabel("0")
 			value_label.setObjectName("statValue")
-			value_label.setAlignment(
-				Qt.AlignmentFlag.AlignCenter
-			)
+			value_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
 			self.stat_values[key] = value_label
 
@@ -216,18 +209,10 @@ class CharacterPanel(QFrame):
 		self.skill_table.setIndentation(0)
 		self.skill_table.setUniformRowHeights(True)
 
-		self.skill_table.setSelectionMode(
-			QAbstractItemView.SelectionMode.NoSelection
-		)
-		self.skill_table.setFocusPolicy(
-			Qt.FocusPolicy.NoFocus
-		)
-		self.skill_table.setHorizontalScrollBarPolicy(
-			Qt.ScrollBarPolicy.ScrollBarAlwaysOff
-		)
-		self.skill_table.setVerticalScrollBarPolicy(
-			Qt.ScrollBarPolicy.ScrollBarAlwaysOff
-		)
+		self.skill_table.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
+		self.skill_table.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+		self.skill_table.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+		self.skill_table.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
 		header = self.skill_table.header()
 		header.setStretchLastSection(False)
@@ -253,10 +238,7 @@ class CharacterPanel(QFrame):
 		self.skill_table.setColumnWidth(1, 34)
 		self.skill_table.setColumnWidth(3, 34)
 
-		self.skill_values: dict[
-			str,
-			tuple[QTreeWidgetItem, int],
-		] = {}
+		self.skill_values: dict[str, tuple[QTreeWidgetItem, int],] = {}
 
 		skill_rows = (
 			(
@@ -298,10 +280,9 @@ class CharacterPanel(QFrame):
 				]
 			)
 
-			item.setTextAlignment(
-				1,
-				Qt.AlignmentFlag.AlignCenter,
-			)
+			item.setTextAlignment(1,
+			                      Qt.AlignmentFlag.AlignCenter,
+			                      )
 			item.setTextAlignment(
 				3,
 				Qt.AlignmentFlag.AlignCenter,
@@ -314,23 +295,15 @@ class CharacterPanel(QFrame):
 
 		self.skill_table.doItemsLayout()
 
-		skill_table_height = (
-				self.skill_table.frameWidth() * 2
-		)
+		skill_table_height = (self.skill_table.frameWidth() * 2)
 
-		for row in range(
-				self.skill_table.topLevelItemCount()
-		):
-			row_height = (
-				self.skill_table.sizeHintForRow(row)
-			)
+		for row in range(self.skill_table.topLevelItemCount()):
+			row_height = (self.skill_table.sizeHintForRow(row))
 
 			if row_height > 0:
 				skill_table_height += row_height
 
-		self.skill_table.setFixedHeight(
-			skill_table_height
-		)
+		self.skill_table.setFixedHeight(skill_table_height)
 		self.skill_table.setSizePolicy(
 			QSizePolicy.Policy.Expanding,
 			QSizePolicy.Policy.Fixed,
@@ -341,20 +314,23 @@ class CharacterPanel(QFrame):
 
 		# Character features
 
-		features_frame, features_layout = (
-			self.create_section()
+		features_frame, features_layout = (self.create_section())
+
+		features_layout.setContentsMargins(
+			Spacing.MD,
+			Spacing.XS,
+			Spacing.MD,
+			Spacing.MD,
+		)
+
+		features_layout.addWidget(
+			self.create_section_title("Особенности")
 		)
 
 		self.features = QListWidget()
-		self.features.setObjectName(
-			"characterFeatures"
-		)
-		self.features.setSelectionMode(
-			QAbstractItemView.SelectionMode.NoSelection
-		)
-		self.features.setFocusPolicy(
-			Qt.FocusPolicy.NoFocus
-		)
+		self.features.setObjectName("characterFeatures")
+		self.features.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
+		self.features.setFocusPolicy(Qt.FocusPolicy.NoFocus)
 		self.features.setSizePolicy(
 			QSizePolicy.Policy.Expanding,
 			QSizePolicy.Policy.Expanding,
@@ -369,12 +345,8 @@ class CharacterPanel(QFrame):
 		self.features.setSpacing(Spacing.XS)
 		self.features.setWordWrap(True)
 
-		self.features.setHorizontalScrollBarPolicy(
-			Qt.ScrollBarPolicy.ScrollBarAlwaysOff
-		)
-		self.features.setVerticalScrollMode(
-			QAbstractItemView.ScrollMode.ScrollPerPixel
-		)
+		self.features.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+		self.features.setVerticalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
 
 		layout.addWidget(
 			features_frame,
@@ -383,9 +355,7 @@ class CharacterPanel(QFrame):
 
 		# Party
 
-		party_frame, party_section_layout = (
-			self.create_section()
-		)
+		party_frame, party_section_layout = (self.create_section())
 
 		party_section_layout.setContentsMargins(
 			Spacing.SM,
@@ -395,33 +365,18 @@ class CharacterPanel(QFrame):
 		)
 		party_section_layout.setSpacing(0)
 
-		party_frame.setFixedHeight(
-			Sizes.PARTY_SECTION_HEIGHT
-		)
+		party_frame.setFixedHeight(Sizes.PARTY_SECTION_HEIGHT)
 		party_frame.setSizePolicy(
 			QSizePolicy.Policy.Expanding,
 			QSizePolicy.Policy.Fixed,
 		)
 
 		self.party_container = QWidget()
-		self.party_container.setObjectName(
-			"characterParty"
-		)
-
-		self.party_layout = QHBoxLayout(
-			self.party_container
-		)
-		self.party_layout.setContentsMargins(
-			0,
-			0,
-			0,
-			0,
-		)
+		self.party_container.setObjectName("characterParty")
+		self.party_layout = QHBoxLayout(self.party_container)
+		self.party_layout.setContentsMargins(0, 0, 0, 0, )
 		self.party_layout.setSpacing(Spacing.XS)
-		self.party_layout.setAlignment(
-			Qt.AlignmentFlag.AlignLeft
-			| Qt.AlignmentFlag.AlignVCenter
-		)
+		self.party_layout.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
 
 		party_section_layout.addWidget(
 			self.party_container
@@ -516,9 +471,7 @@ class CharacterPanel(QFrame):
 			return
 
 		if not self.character.features:
-			empty_item = QListWidgetItem(
-				"Особенности не заданы"
-			)
+			empty_item = QListWidgetItem("Особенности не заданы")
 			empty_item.setFlags(
 				empty_item.flags()
 				& ~Qt.ItemFlag.ItemIsEnabled
@@ -530,9 +483,7 @@ class CharacterPanel(QFrame):
 		for feature in self.character.features:
 			item = QListWidgetItem(feature.title)
 
-			icon = load_feature_icon(
-				feature.icon_name
-			)
+			icon = load_feature_icon(feature.icon_name)
 
 			if not icon.isNull():
 				item.setIcon(icon)
@@ -554,9 +505,7 @@ class CharacterPanel(QFrame):
 
 		self.health.setRange(0, 1)
 		self.health.setValue(0)
-		self.health.setFormat(
-			"Здоровье  0 / 0"
-		)
+		self.health.setFormat("Здоровье  0 / 0")
 		self.features.clear()
 
 		for label in self.stat_values.values():
@@ -572,55 +521,23 @@ class CharacterPanel(QFrame):
 		self.portrait.clear()
 
 		if self.character is None:
-			self.set_portrait_placeholder()
+			self.portrait.setText("Портрет\nне выбран")
 			return
 
-		portrait_path = self.character.portrait
-
-		if not portrait_path:
-			self.set_portrait_placeholder()
-			return
-
-		path = Path(portrait_path)
-
-		if not path.is_file():
-			self.set_portrait_placeholder()
-			return
-
-		pixmap = QPixmap(str(path))
+		pixmap = load_cover_pixmap(
+			CHARACTER_PORTRAITS,
+			self.character.portrait,
+			self.portrait.size(),
+		)
 
 		if pixmap.isNull():
-			self.set_portrait_placeholder()
+			self.portrait.setText("Нет\nпортрета")
 			return
 
-		scaled_pixmap = pixmap.scaled(
-			self.portrait.size(),
-			Qt.AspectRatioMode.KeepAspectRatioByExpanding,
-			Qt.TransformationMode.SmoothTransformation,
-		)
-
-		crop_x = max(
-			0,
-			(scaled_pixmap.width() - self.portrait.width()) // 2,
-		)
-		crop_y = max(
-			0,
-			(scaled_pixmap.height() - self.portrait.height()) // 2,
-		)
-
-		cropped_pixmap = scaled_pixmap.copy(
-			crop_x,
-			crop_y,
-			self.portrait.width(),
-			self.portrait.height(),
-		)
-
-		self.portrait.setPixmap(cropped_pixmap)
+		self.portrait.setPixmap(pixmap)
 
 	def set_portrait_placeholder(self) -> None:
-		self.portrait.setText(
-			"Портрет\nне выбран"
-		)
+		self.portrait.setText("Портрет\nне выбран")
 
 	def set_party(
 			self,
@@ -643,6 +560,15 @@ class CharacterPanel(QFrame):
 			)
 
 		self.party_layout.addStretch()
+
+	def create_section_title(
+			self,
+			text: str,
+	) -> QLabel:
+		title = QLabel(text.upper())
+		title.setObjectName("sectionTitle")
+
+		return title
 
 	def create_section(self) -> tuple[QFrame, QVBoxLayout]:
 		frame = QFrame()

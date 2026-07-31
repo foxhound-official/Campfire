@@ -3,20 +3,20 @@ from PySide6.QtWidgets import (
 	QHBoxLayout,
 	QMainWindow,
 	QStackedWidget,
-	QWidget, QStackedLayout, QGridLayout,
+	QWidget, QGridLayout,
 )
 
 from app.models.campaign import Campaign
 from app.models.scene_type import SceneType
 from app.theme.sizes import Sizes
 from app.ui.panels.character.character_panel import CharacterPanel
+from app.ui.panels.inventory import InventoryPanel
 from app.ui.scenes import (
 	BattleScene,
 	MerchantScene,
 	NarrationScene,
 	PuzzleScene,
 )
-from inventory import InventoryPanel
 
 
 class MainWindow(QMainWindow):
@@ -40,7 +40,6 @@ class MainWindow(QMainWindow):
 			Sizes.WINDOW_WIDTH,
 			Sizes.WINDOW_HEIGHT,
 		)
-
 		self._create_scenes()
 		self._create_ui()
 		self.refresh_campaign()

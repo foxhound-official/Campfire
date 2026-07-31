@@ -10,6 +10,7 @@ from PySide6.QtWidgets import (
 )
 
 from app.models.character import Character
+from app.theme.images import load_cover_pixmap, PARTY_PORTRAITS
 from app.theme.sizes import Sizes
 from app.theme.spacing import Spacing
 
@@ -138,7 +139,11 @@ class PartyMemberWidget(QWidget):
 		if portrait_path is None:
 			return
 
-		pixmap = QPixmap(str(portrait_path))
+		pixmap = load_cover_pixmap(
+			PARTY_PORTRAITS,
+			portrait_name,
+			self.portrait.size(),
+		)
 
 		if pixmap.isNull():
 			return

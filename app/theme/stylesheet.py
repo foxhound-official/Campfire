@@ -1,19 +1,58 @@
 from app.theme.colors import Colors
+from app.theme.images import ASSETS_PATH
 from app.theme.radius import Radius
 
 
 def load_stylesheet() -> str:
-	return f"""
-    QWidget {{
-        background: {Colors.BACKGROUND};
-        color: {Colors.TEXT};
-    }}
+	parchment_texture = (
+			ASSETS_PATH
+			/ "textures"
+			/ "texture_parchment.png"
+	).as_posix()
+	leather_texture = (
+			ASSETS_PATH
+			/ "textures"
+			/ "texture_leather.png"
+	).as_posix()
+	inventory_backpack_texture = (
+			ASSETS_PATH
+			/ "textures"
+			/ "texture_inventory_backpack.png"
+	).as_posix()
+	inventory_handle_texture = (
+			ASSETS_PATH
+			/ "textures"
+			/ "texture_inventory_handle.png"
+	).as_posix()
 
-    QFrame {{
-        background: {Colors.PANEL};
-        border: 1px solid {Colors.BORDER};
-        border-radius: {Radius.MD}px;
-    }}
+	return f"""
+
+	QWidget {{
+		background: transparent;
+		color: {Colors.TEXT};
+	}}
+
+	QMainWindow {{
+		background-color: {Colors.BACKGROUND};
+		background-image: url("{leather_texture}");
+		background-repeat: repeat-xy;
+		background-position: top left;
+	}}
+
+	QFrame {{
+		background: transparent;
+		border: none;
+	}}
+
+	QFrame#characterPanel {{
+		background-color: {Colors.PANEL};
+		background-image: url("{parchment_texture}");
+		background-repeat: repeat-xy;
+		background-position: top left;
+
+		border: 1px solid {Colors.BORDER};
+		border-radius: {Radius.MD}px;
+	}}
 
     QLineEdit,
     QSpinBox,
@@ -24,53 +63,57 @@ def load_stylesheet() -> str:
         padding: 4px;
     }}
 
-    QProgressBar {{
-        border: 1px solid {Colors.BORDER};
-        border-radius: {Radius.SM}px;
-        text-align: center;
-    }}
-
-    QProgressBar::chunk {{
-        background: {Colors.ACCENT};
-    }}
+	QProgressBar {{
+		background: {Colors.BACKGROUND_LIGHT};
+		color: {Colors.TEXT_ON_DARK};
+		border: 1px solid {Colors.BORDER};
+		border-radius: {Radius.SM}px;
+		text-align: center;
+	}}
+	
+	QProgressBar::chunk {{
+		background: {Colors.ACCENT};
+	}}
     
     QLabel#sceneBackground {{
     border: none;
     }}
     
-    QLabel#sceneBanner {{
-    background: rgba(25, 25, 25, 180);
-
-    border: 1px solid #4A4B50;
-    border-radius: 8px;
-
-    padding: 8px;
-
-    font-weight: bold;
-    font-size: 18px;
-    }}
+	QLabel#sceneBanner {{
+		background: {Colors.OVERLAY};
+		color: {Colors.TEXT_ON_DARK};
+	
+		border: 1px solid {Colors.BORDER_LIGHT};
+		border-radius: {Radius.MD}px;
+	
+		padding: 8px;
+	
+		font-weight: bold;
+		font-size: 18px;
+	}}
     
-    QFrame#card {{
-    background: #2A2B2F;
-    border: 1px solid #4A4B50;
-    border-radius: 8px;
-    }}
-    
-    QFrame#card:hover {{
-    border: 1px solid #E09F3E;
-    }}
-    
-    QLabel#cardImage {{
-    background: #3A3B40;
-    border-radius: 6px;
-    border: none;
-    }}
-
-    QLabel#cardTitle {{
-        background: transparent;
-        border: none;
-        font-weight: bold;
-    }}
+	QFrame#card {{
+		background: {Colors.PANEL_LIGHT};
+		border: 1px solid {Colors.BORDER};
+		border-radius: {Radius.MD}px;
+	}}
+	
+	QFrame#card:hover {{
+		border-color: {Colors.ACCENT_HOVER};
+	}}
+	
+	QLabel#cardImage {{
+		background: {Colors.PANEL_DARK};
+		border: none;
+		border-radius: {Radius.SM}px;
+	}}
+	
+	QLabel#cardTitle {{
+		background: transparent;
+		border: none;
+		color: {Colors.TEXT};
+		font-weight: bold;
+	}}
 
     QProgressBar#cardHealth {{
         min-height: 18px;
@@ -110,8 +153,9 @@ def load_stylesheet() -> str:
 	
 	QLabel#levelBadge,
 	QLabel#temporaryHealth {{
-		background: {Colors.BACKGROUND};
-		border: 1px solid {Colors.BORDER};
+		background: {Colors.BORDER};
+		color: {Colors.TEXT_ON_DARK};
+		border: 1px solid {Colors.BORDER_LIGHT};
 		border-radius: {Radius.MD}px;
 		font-weight: 600;
 	}}
@@ -229,15 +273,99 @@ def load_stylesheet() -> str:
 	}}
 
 	QFrame#inventoryContent {{
-		background: {Colors.PANEL};
-		border: 1px solid {Colors.BORDER};
-		border-radius: {Radius.MD}px;
+		background: transparent;
+
+		border-style: solid;
+		border-width: 28px 20px 28px 20px;
+		border-image: url("{inventory_backpack_texture}")
+			78 74 78 74
+			stretch stretch;
+
+		border-radius: 0;
+	}}
+
+	QLabel#inventoryTitle {{
+		background: transparent;
+		border: none;
+		color: {Colors.TEXT_ON_DARK};
+		font-size: 18px;
+		font-weight: 700;
+	}}
+
+	QLabel#inventoryCapacity {{
+		background: transparent;
+		border: none;
+		color: {Colors.PANEL_DARK};
+	}}
+
+	QLabel#cardDescription,
+	QLabel#itemQuantity {{
+		background: transparent;
+		border: none;
+		color: {Colors.TEXT_SECONDARY};
 	}}
 
 	QPushButton#inventoryHandle {{
-		background: {Colors.PANEL};
-		border: 1px solid {Colors.BORDER};
-		border-radius: {Radius.MD};
+		background: transparent;
+
+		border-style: solid;
+		border-width: 8px 6px 8px 6px;
+		border-image: url("{inventory_handle_texture}")
+			32 28 32 28
+			stretch stretch;
+
+		color: {Colors.TEXT_ON_DARK};
+		padding: 0;
+
+		font-size: 24px;
+		font-weight: 600;
 	}}
+
+	QPushButton#inventoryHandle:hover {{
+		color: {Colors.ACCENT_HOVER};
+	}}
+
+	QPushButton#inventoryHandle:pressed {{
+		padding-left: 1px;
+	}}
+
+    QScrollBar:vertical {{
+    	background: transparent;
+    	width: 10px;
+    	margin: 0;
+    }}
+
+    QScrollBar::handle:vertical {{
+    	background: {Colors.BORDER_LIGHT};
+    	border-radius: {Radius.SM}px;
+    	min-height: 28px;
+    	margin: 2px;
+    }}
+
+    QScrollBar::handle:vertical:hover {{
+    	background: {Colors.ACCENT};
+    }}
+
+    QScrollBar::add-line:vertical,
+    QScrollBar::sub-line:vertical {{
+    	background: transparent;
+    	border: none;
+    	height: 0;
+    }}
+
+    QScrollBar::add-page:vertical,
+    QScrollBar::sub-page:vertical {{
+    	background: transparent;
+    }}
+
+    QLabel#sectionTitle {{
+    	background: transparent;
+    	color: {Colors.TEXT_SECONDARY};
+    	border: none;
+    	border-bottom: 1px solid {Colors.BORDER_LIGHT};
+    	padding-bottom: 4px;
+    	font-size: 11px;
+    	font-weight: 700;
+    }}
 
     """

@@ -2,6 +2,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QLabel, QProgressBar
 
 from app.models.creature import Creature
+from app.theme.images import CREATURE_PORTRAITS
 from app.ui.widgets.cards.card import Card
 
 
@@ -56,6 +57,10 @@ class CreatureCard(Card):
 	def refresh(self) -> None:
 		health = self.creature.health
 
+		self.set_image(
+			CREATURE_PORTRAITS,
+			self.creature.portrait,
+		)
 		self.set_name(self.creature.name)
 		self.set_health(
 			current_health=health.current,
