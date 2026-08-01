@@ -191,7 +191,7 @@ def create_preview_campaign() -> Campaign:
 				title="Лес перед бурей",
 				music=(
 					"app/assets/music/"
-					"forest_ambient.ogg"
+					"narrative_scene_calm_02.ogg"
 				),
 				description=(
 					"Дорога постепенно исчезает под корнями "
@@ -204,7 +204,7 @@ def create_preview_campaign() -> Campaign:
 				title="Засада на лесном тракте",
 				music=(
 					"app/assets/music/"
-					"forest_battle.ogg"
+					"battle_scene_03.ogg"
 				),
 				creatures=[
 					Creature(

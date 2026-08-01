@@ -20,7 +20,7 @@ class MusicPlayer(QObject):
 	def __init__(
 			self,
 			parent: QObject | None = None,
-			fade_duration: int = 1800,
+			fade_duration: int = 600,
 			volume: float = 0.25,
 	):
 		super().__init__(parent)
