@@ -47,7 +47,6 @@ class Character(JSONWizard):
 		default_factory=list
 	)
 
-	inventory: list[Item] = field(default_factory=list)
 	effects: list[Effect] = field(default_factory=list)
 
 	notes: str = ""

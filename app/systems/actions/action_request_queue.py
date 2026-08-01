@@ -13,13 +13,13 @@ class ActionRequestQueueError(Exception):
 
 
 class ActionRequestNotFoundError(
-		ActionRequestQueueError
+	ActionRequestQueueError
 ):
 	pass
 
 
 class ActionRequestStateError(
-		ActionRequestQueueError
+	ActionRequestQueueError
 ):
 	pass
 
@@ -42,12 +42,21 @@ class ActionRequestQueue:
 			)
 
 		if (
-			request.status
-			!= ActionRequestStatus.PENDING
+				request.status
+				!= ActionRequestStatus.PENDING
 		):
 			raise ActionRequestStateError(
 				"В очередь можно добавить только "
 				"ожидающий запрос"
+			)
+
+		if self.has_pending_item_request(
+				character_id=request.character_id,
+				item_id=request.item_id,
+		):
+			raise ActionRequestQueueError(
+				"Запрос по этому предмету уже ожидает "
+				"решения ведущего"
 			)
 
 		self._requests[request.id] = request
@@ -73,8 +82,8 @@ class ActionRequestQueue:
 			request
 			for request in self._requests.values()
 			if (
-				request.status
-				== ActionRequestStatus.PENDING
+					request.status
+					== ActionRequestStatus.PENDING
 			)
 		]
 
@@ -114,8 +123,8 @@ class ActionRequestQueue:
 		request = self.get(request_id)
 
 		if (
-			request.status
-			!= ActionRequestStatus.PENDING
+				request.status
+				!= ActionRequestStatus.PENDING
 		):
 			raise ActionRequestStateError(
 				"Запрос уже обработан: "
@@ -123,3 +132,21 @@ class ActionRequestQueue:
 			)
 
 		return request
+
+	def has_pending_item_request(
+			self,
+			character_id: str,
+			item_id: str | None,
+	) -> bool:
+		if item_id is None:
+			return False
+
+		return any(
+			request.character_id == character_id
+			and request.item_id == item_id
+			and (
+					request.status
+					== ActionRequestStatus.PENDING
+			)
+			for request in self._requests.values()
+		)

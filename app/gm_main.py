@@ -3,14 +3,14 @@ import sys
 from PySide6.QtWidgets import QApplication
 
 from app.theme.stylesheet import load_stylesheet
-from app.ui.main_window import MainWindow
+from app.ui.gm_window import GMWindow
 
 
 def main() -> None:
 	app = QApplication(sys.argv)
 	app.setStyleSheet(load_stylesheet())
 
-	window = MainWindow()
+	window = GMWindow()
 	window.show()
 
 	sys.exit(app.exec())
